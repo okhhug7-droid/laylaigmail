@@ -45,7 +45,7 @@ body {
 .google-logo .g6 { color: #ea4335; }
 
 .google-header h1 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 400;
   color: #202124;
 }
@@ -77,14 +77,19 @@ body {
 }
 
 .form-box input {
+  width: 100%;
   height: 50px;
-  padding: 0 15px;
+  padding: 0 45px 0 15px; /* Chừa khoảng trống bên phải cho nút hiện mật khẩu */
   border: 1px solid #dadce0;
   border-radius: 4px;
   font-size: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   outline: none;
   transition: border 0.3s;
+}
+
+#email-form input {
+  padding-right: 15px; /* Email không cần chừa khoảng trống icon mắt */
 }
 
 .form-box input:focus {
@@ -92,9 +97,25 @@ body {
   border-width: 2px;
 }
 
-.form-box button, .secondary-btn {
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 15px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+}
+
+.form-box button[type="submit"], .secondary-btn {
   background-color: #1a73e8;
-  color: #white;
+  color: #fff;
   border: none;
   border-radius: 4px;
   height: 36px;
@@ -103,10 +124,9 @@ body {
   font-weight: 500;
   cursor: pointer;
   align-self: flex-end;
-  color: #fff;
 }
 
-.form-box button:hover, .secondary-btn:hover {
+.form-box button[type="submit"]:hover, .secondary-btn:hover {
   background-color: #1b66c9;
 }
 
@@ -161,4 +181,4 @@ body {
   width: 100%;
   align-self: center;
   height: 40px;
-}
+  }
