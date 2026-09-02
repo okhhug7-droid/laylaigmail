@@ -9,7 +9,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const accountLabel = document.getElementById("account-label");
   const resetBtn = document.getElementById("reset-btn");
 
-  // Bước 1: Nhập email -> Chuyển sang bước nhập mật khẩu
+  // Chức năng ẩn/hiện mật khẩu
+  const togglePasswordButtons = document.querySelectorAll(".toggle-password");
+  togglePasswordButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const targetId = button.getAttribute("data-target");
+      const passwordInput = document.getElementById(targetId);
+      
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        button.textContent = "🔒"; // Đổi icon khi hiển thị
+      } else {
+        passwordInput.type = "password";
+        button.textContent = "👁️"; // Đổi lại icon con mắt
+      }
+    });
+  });
+
+  // Bước 1: Nhập email -> Chuyển sang bước nhập mật khẩu mới
   emailForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const userEmail = emailInput.value.trim();
@@ -27,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmPass = document.getElementById("confirm-password").value;
 
     if (newPass !== confirmPass) {
-      alert("Mật khẩu không khớp, vui lòng nhập lại!");
+      alert("Mật khẩu xác nhận không khớp, vui lòng nhập lại!");
       return;
     }
 
@@ -39,6 +56,12 @@ document.addEventListener("DOMContentLoaded", () => {
   resetBtn.addEventListener("click", () => {
     emailForm.reset();
     passwordForm.reset();
+    
+    // Đưa input mật khẩu về dạng ẩn mặc định
+    document.getElementById("new-password").type = "password";
+    document.getElementById("confirm-password").type = "password";
+    document.querySelectorAll(".toggle-password").forEach(btn => btn.textContent = "👁️");
+
     successStep.classList.remove("active");
     emailStep.classList.add("active");
   });
