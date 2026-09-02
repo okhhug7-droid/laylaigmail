@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Account Recovery</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <div class="panel">
+        <div class="google-header">
+          <div class="google-logo" aria-label="Google logo">
+            <span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span>
+          </div>
+          <h1>Đăng nhập</h1>
+        </div>
+
+        <section id="email-step" class="step active">
+          <p class="subtitle">Sử dụng tài khoản Google của bạn</p>
+
+          <form id="email-form" class="form-box">
+            <label for="email">Email hoặc số điện thoại</label>
+            <input id="email" name="email" type="email" placeholder="Nhập địa chỉ email" required />
+            <button type="submit">Tiếp theo</button>
+          </form>
+        </section>
+
+        <section id="password-step" class="step">
+          <div class="account-box">
+            <span class="account-title">Tài khoản</span>
+            <strong id="account-label">example@gmail.com</strong>
+          </div>
+
+          <form id="password-form" class="form-box">
+            <label for="new-password">Mật khẩu mới</label>
+            <input id="new-password" type="password" placeholder="Nhập mật khẩu mới" required />
+
+            <label for="confirm-password">Xác nhận mật khẩu</label>
+            <input id="confirm-password" type="password" placeholder="Nhập lại mật khẩu" required />
+
+            <button type="submit">Cập nhật mật khẩu</button>
+          </form>
+        </section>
+
+        <section id="success-step" class="step success-step">
+          <div class="success-icon">✓</div>
+          <h2>Mật khẩu đã được cập nhật</h2>
+          <p>Bạn có thể đăng nhập lại bằng mật khẩu mới.</p>
+          <button id="reset-btn" type="button" class="secondary-btn">Quay lại</button>
+        </section>
+      </div>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
