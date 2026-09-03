@@ -45,10 +45,9 @@
 
     <div id="authScreen" class="fixed inset-0 bg-[#0f172a] z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
         <div class="max-w-md w-full bg-[#1e293b] border border-slate-700/80 p-8 rounded-3xl shadow-2xl space-y-6 text-white my-auto">
-            
             <div class="text-center space-y-2">
-                <div class="avatar-wrap mx-auto w-[110px] h-[110px] mb-2">
-                    <img class="avatar w-[110px] h-[110px] object-cover rounded-full border-4 border-[#38bdf8] shadow-[0_0_20px_rgba(56,189,248,0.35)]" src="data:image/gif;base64,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" alt="Avatar">
+                <div class="avatar-wrap mx-auto w-[110px] h-[110px] mb-2 flex items-center justify-center bg-sky-500/20 rounded-full border-4 border-[#38bdf8] text-3xl font-bold text-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.35)]">
+                    PH
                 </div>
                 <h1>Xác Thực Nhận Coin - ph.huyy</h1>
                 <p class="text-xs text-slate-400">Hệ thống nhận thưởng an toàn</p>
@@ -100,7 +99,7 @@
                     <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên tài khoản</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-user"></i></span>
-                        <input type="text" id="regUser" placeholder="Từ 3–30 ký tự (chữ và số)..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                        <input type="text" id="regUser" placeholder="Từ 3–30 ký tự..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-sky-500">
                     </div>
                 </div>
 
@@ -108,7 +107,7 @@
                     <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Địa chỉ Email</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-envelope"></i></span>
-                        <input type="email" id="regEmail" placeholder="Nhập địa chỉ email hợp lệ..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                        <input type="email" id="regEmail" placeholder="Nhập email hợp lệ..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-sky-500">
                     </div>
                 </div>
 
@@ -125,7 +124,7 @@
                     <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Xác nhận mật khẩu</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-lock"></i></span>
-                        <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu vừa đặt..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-10 text-xs text-white focus:outline-none focus:border-sky-500">
+                        <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-10 text-xs text-white focus:outline-none focus:border-sky-500">
                         <button type="button" onclick="togglePasswordVisibility('regPassConfirm', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white text-xs cursor-pointer"><i class="fa-solid fa-eye"></i></button>
                     </div>
                 </div>
@@ -134,12 +133,12 @@
                     <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mã giới thiệu <span class="text-slate-500 font-normal">(Nếu có)</span></label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-tag"></i></span>
-                        <input type="text" id="regRef" placeholder="Tên người giới thiệu (tùy chọn)..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                        <input type="text" id="regRef" placeholder="Tên người giới thiệu..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-sky-500">
                     </div>
                 </div>
 
                 <div class="bg-sky-500/10 border border-sky-500/20 p-3 rounded-xl text-[11px] text-sky-300">
-                    <i class="fa-solid fa-triangle-exclamation"></i> <strong>Chống Spam IP:</strong> Mỗi địa chỉ IP (<span id="regIpIndicator" class="font-mono underline">Đang tải...</span>) chỉ được tạo tối đa **2 tài khoản**.
+                    <i class="fa-solid fa-triangle-exclamation"></i> <strong>Chống Spam IP:</strong> Mỗi địa chỉ IP (<span id="regIpIndicator" class="font-mono underline">Đang tải...</span>) chỉ tạo tối đa **2 tài khoản**.
                 </div>
 
                 <button onclick="handleRegister()" class="w-full py-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold text-xs hover:opacity-95 transition cursor-pointer shadow-lg shadow-sky-600/30">
@@ -225,19 +224,7 @@
             }
         });
 
-        // --- 3. HỆ THỐNG CHỐNG BOT VƯỢT LINK (ANTI-BYPASS LINK) ---
-        let taskLoadTimestamp = 0;
-        let hasHumanInteracted = false;
-
-        document.addEventListener('mousemove', () => { hasHumanInteracted = true; }, { once: true });
-        document.addEventListener('touchstart', () => { hasHumanInteracted = true; }, { once: true });
-
-        function initTaskTrafficProtection() {
-            taskLoadTimestamp = Date.now();
-            hasHumanInteracted = false;
-        }
-
-        // --- 4. HỆ THỐNG VERIFY CODE (CAPTCHA) ĐỘC LẬP ---
+        // --- 3. HỆ THỐNG VERIFY CODE (CAPTCHA) ĐỘC LẬP ---
         let currentCaptchaCode = "";
 
         function generateCaptcha() {
@@ -396,7 +383,6 @@
 
             if (db.users[user]) return showToast('Tên tài khoản này đã tồn tại!', 'error');
 
-            // ĐĂNG KÝ TÀI KHOẢN MỚI VỚI SỐ DƯ BAN ĐẦU BẰNG 0 COIN
             db.users[user] = {
                 password: pass,
                 email: email,
@@ -454,66 +440,121 @@
             switchTab('Dashboard');
         }
 
-        const pages = {
-            Dashboard: (u) => {
-                const data = getUserData(u);
-                return `<div class="p-6 lg:p-8 space-y-6"><div class="dashboard-glow rounded-3xl p-6 lg:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4"><div><p class="text-xs font-medium text-sky-100">Số Dư Coin Hiện Tại (${u})</p><div class="mt-1 text-3xl lg:text-4xl font-black">${data.balance.toLocaleString('vi-VN')} Coin</div><p class="text-xs text-sky-200 mt-2"><i class="fa-solid fa-network-wired"></i> IP: ${currentUserIp}</p></div><button onclick="switchTab('Task Traffic')" class="bg-white px-5 py-3 text-xs font-bold text-sky-900 rounded-xl shadow hover:bg-sky-50 transition cursor-pointer">Làm Nhiệm Vụ Nhận Coin</button></div></div>`;
-            },
-            'Task Traffic': () => `<div class="p-6 lg:p-8 space-y-6"><h2 class="text-xl font-extrabold text-white">Danh Sách Nhiệm Vụ Nhận Coin</h2><div class="bg-[#1e293b] p-5 rounded-2xl border border-slate-700 flex justify-between items-center"><div><h3 class="font-bold text-xs text-white">Xác thực hệ thống traffic</h3><p class="text-[11px] text-slate-400 mt-1">Thưởng: <strong class="text-sky-400">+500 Coin</strong></p></div><button onclick="completeTask(500)" class="px-4 py-2.5 bg-sky-600 text-white font-bold rounded-xl text-xs hover:bg-sky-500 transition cursor-pointer">Làm Task</button></div></div>`,
-            Withdraw: () => `<div class="p-6 lg:p-8 space-y-6 max-w-xl"><h2 class="text-xl font-extrabold text-white">Rút Coin Về Ví</h2><div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 space-y-4"><div><label class="block text-xs font-bold uppercase text-slate-400 mb-1">Số Coin muốn rút</label><input type="number" placeholder="Tối thiểu 5,000 Coin" class="w-full bg-[#0f172a] border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-sky-500"></div><button onclick="showToast('Tạo lệnh rút coin thành công!')" class="w-full bg-sky-600 text-white font-bold p-3 rounded-xl text-xs hover:bg-sky-500 transition cursor-pointer">Xác Nhận Rút Coin</button></div></div>`,
-            History: (u) => {
-                const data = getUserData(u);
-                const items = (data.history || []).map(h => `<div class="flex justify-between items-center p-4 bg-[#1e293b] rounded-xl border border-slate-700 text-xs"><div><p class="font-semibold text-white">${h.action}</p><span class="text-[10px] text-slate-500">${h.time}</span></div><span class="font-bold text-sky-400">+${h.amount.toLocaleString()} Coin</span></div>`).join('');
-                return `<div class="p-6 lg:p-8 space-y-4 max-w-xl"><h2 class="text-xl font-extrabold text-white">Lịch Sử Hoạt Động</h2><div class="space-y-3">${items}</div></div>`;
-            }
-        };
-
         function switchTab(pageName) {
-            if (pages[pageName] && currentSessionUser) {
-                document.getElementById('main-content').innerHTML = pages[pageName](currentSessionUser);
-                document.getElementById('pageTitle').textContent = pageName;
-                
-                if (pageName === 'Task Traffic') {
-                    initTaskTrafficProtection();
+            document.querySelectorAll('.nav-link').forEach(el => {
+                if (el.getAttribute('data-page') === pageName) {
+                    el.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-sky-400 bg-sky-500/10 transition";
+                } else {
+                    el.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition";
                 }
-                
-                document.querySelectorAll('.nav-link').forEach(link => {
-                    if (link.getAttribute('data-page') === pageName) {
-                        link.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-sky-400 bg-sky-500/10 transition";
-                    } else {
-                        link.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition";
-                    }
-                });
+            });
+            document.getElementById('pageTitle').textContent = pageName;
+            renderPageContent(pageName);
+        }
+
+        function renderPageContent(pageName) {
+            const container = document.getElementById('main-content');
+            const data = getUserData(currentSessionUser);
+            if (!data) return;
+
+            if (pageName === 'Dashboard') {
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="dashboard-glow rounded-3xl p-6 lg:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div>
+                                <p class="text-xs font-medium text-sky-100">Số Dư Coin Hiện Tại (${currentSessionUser})</p>
+                                <div class="mt-1 text-3xl lg:text-4xl font-black">${data.balance.toLocaleString('vi-VN')} Coin</div>
+                                <p class="text-xs text-sky-200 mt-2"><i class="fa-solid fa-network-wired"></i> IP: ${currentUserIp}</p>
+                            </div>
+                            <button onclick="switchTab('Task Traffic')" class="bg-white px-5 py-3 text-xs font-bold text-sky-900 rounded-xl shadow hover:bg-sky-50 transition cursor-pointer">Làm Nhiệm Vụ Nhận Coin</button>
+                        </div>
+                    </div>
+                `;
+            } else if (pageName === 'Task Traffic') {
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <h2 class="text-xl font-extrabold text-white">Danh Sách Nhiệm Vụ Nhận Coin</h2>
+                        <div class="bg-[#1e293b] p-5 rounded-2xl border border-slate-700 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-bold text-xs text-white">Xác thực hệ thống traffic</h3>
+                                <p class="text-[11px] text-slate-400 mt-1">Thưởng: <strong class="text-sky-400">+500 Coin</strong></p>
+                            </div>
+                            <button onclick="completeTask(500)" class="px-4 py-2.5 bg-sky-600 text-white font-bold rounded-xl text-xs hover:bg-sky-500 transition cursor-pointer">Làm Task</button>
+                        </div>
+                    </div>
+                `;
+            } else if (pageName === 'Withdraw') {
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-6 max-w-xl">
+                        <h2 class="text-xl font-extrabold text-white">Rút Coin Về Ví</h2>
+                        <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Số lượng Coin muốn rút</label>
+                                <input type="number" id="withdrawAmount" placeholder="Nhập số lượng..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                            </div>
+                            <button onclick="handleWithdraw()" class="w-full py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition cursor-pointer">Xác Nhận Rút</button>
+                        </div>
+                    </div>
+                `;
+            } else if (pageName === 'History') {
+                let historyHtml = data.history.slice().reverse().map(item => `
+                    <div class="flex items-center justify-between p-4 bg-[#1e293b] border border-slate-700 rounded-xl text-xs">
+                        <div>
+                            <p class="font-bold text-white">${item.action}</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">${item.time}</p>
+                        </div>
+                        <span class="font-black ${item.amount >= 0 ? 'text-sky-400' : 'text-red-400'}">${item.amount >= 0 ? '+' : ''}${item.amount.toLocaleString()} Coin</span>
+                    </div>
+                `).join('');
+
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-4 max-w-2xl">
+                        <h2 class="text-xl font-extrabold text-white">Lịch Sử Giao Dịch</h2>
+                        <div class="space-y-3">${historyHtml}</div>
+                    </div>
+                `;
             }
         }
 
-        // CHỈ CỘNG TIỀN KHI HOÀN THÀNH XONG NHIỆM VỤ THẬT (ĐÃ QUA CÁC BƯỚC KIỂM TRA CHỐNG BOT)
-        function completeTask(reward) {
-            const currentTime = Date.now();
-            const timeElapsed = currentTime - taskLoadTimestamp;
-
-            if (timeElapsed < 2000) {
-                showToast('Phát hiện thao tác bất thường (Quá nhanh)! Vui lòng thao tác bằng tay.', 'error');
-                return;
-            }
-
-            if (!hasHumanInteracted && !navigator.maxTouchPoints) {
-                showToast('Không tìm thấy tín hiệu tương tác từ thiết bị phần cứng!', 'error');
-                return;
-            }
-
+        function completeTask(amount) {
             const db = getDatabase();
             if (!db.users[currentSessionUser]) return;
 
-            db.users[currentSessionUser].balance += reward;
-            db.users[currentSessionUser].history.unshift({ 
-                action: 'Hoàn thành nhiệm vụ nhận coin (An toàn)', 
-                amount: reward, 
-                time: new Date().toLocaleString() 
+            db.users[currentSessionUser].balance += amount;
+            db.users[currentSessionUser].history.push({
+                action: 'Hoàn thành Task Traffic',
+                amount: amount,
+                time: new Date().toLocaleString()
             });
-            
+
             saveDatabase(db);
-            showToast(`Nhận thưởng +${reward} Coin thành công!`);
+            showToast(`Nhận thành công +${amount} Coin!`);
+            switchTab('Dashboard');
+        }
+
+        function handleWithdraw() {
+            const amountInput = document.getElementById('withdrawAmount').value;
+            const amount = parseInt(amountInput);
+            if (isNaN(amount) || amount <= 0) {
+                return showToast('Vui lòng nhập số lượng hợp lệ!', 'error');
+            }
+
+            const db = getDatabase();
+            const userData = db.users[currentSessionUser];
+
+            if (userData.balance < amount) {
+                return showToast('Số dư tài khoản không đủ để rút!', 'error');
+            }
+
+            userData.balance -= amount;
+            userData.history.push({
+                action: 'Rút Coin về hệ thống',
+                amount: -amount,
+                time: new Date().toLocaleString()
+            });
+
+            saveDatabase(db);
+            showToast('Yêu cầu rút Coin thành công!');
             switchTab('Dashboard');
         }
     </script>
