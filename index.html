@@ -1,63 +1,490 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Khôi phục tài khoản Gmail</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <main class="page">
-      <div class="panel">
-        <div class="google-header">
-          <div class="google-logo" aria-label="Google logo">
-            <span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span>
-          </div>
-          <h1>Khôi phục tài khoản Gmail</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cây Tiền - Đăng Nhập & Đăng Ký</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; }
+        .dashboard-glow { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+        .soft-grid { background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 24px 24px; }
+
+        /* HIỆU ỨNG VẪY TAY CHO NHÂN VẬT */
+        @keyframes waveAnimation {
+            0% { transform: rotate(0deg) translateY(0); }
+            25% { transform: rotate(8deg) translateY(-4px); }
+            50% { transform: rotate(0deg) translateY(0); }
+            75% { transform: rotate(-8deg) translateY(-4px); }
+            100% { transform: rotate(0deg) translateY(0); }
+        }
+        .animate-wave {
+            animation: waveAnimation 1.5s ease-in-out infinite;
+            transform-origin: bottom center;
+        }
+    </style>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 antialiased h-screen overflow-hidden flex flex-col">
+
+    <!-- LỚP MÀN HÌNH CHỜ CLOUDFLARE (MOCK) -->
+    <div id="cloudflareScreen" class="fixed inset-0 bg-[#0b0f19] z-[999999] flex flex-col items-center justify-center text-white px-4">
+        <div class="max-w-md w-full bg-[#121826] border border-slate-800 p-8 rounded-3xl shadow-2xl text-center space-y-6">
+            <div class="w-16 h-16 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-shield-halved fa-bounce"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-black tracking-wide">Kiểm tra bảo mật hệ thống</h2>
+                <p class="text-xs text-slate-400 mt-2">Đang xác thực môi trường duyệt web và chữ ký phần cứng...</p>
+            </div>
+            <div class="bg-[#090d16] p-4 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-400">Trạng thái an ninh:</span>
+                <span id="cfStatusText" class="text-amber-400 font-bold">Đang kiểm tra...</span>
+            </div>
         </div>
+    </div>
 
-        <section id="email-step" class="step active">
-          <p class="subtitle">Sử dụng tài khoản Google của bạn</p>
-
-          <form id="email-form" class="form-box">
-            <label for="email">Email hoặc số điện thoại</label>
-            <input id="email" name="email" type="email" placeholder="Nhập địa chỉ email" required />
-            <button type="submit">Tiếp theo</button>
-          </form>
-        </section>
-
-        <section id="password-step" class="step">
-          <div class="account-box">
-            <span class="account-title">Tài khoản</span>
-            <strong id="account-label">example@gmail.com</strong>
-          </div>
-
-          <form id="password-form" class="form-box">
-            <label for="new-password">Mật khẩu mới</label>
-            <div class="password-container">
-              <input id="new-password" type="password" placeholder="Nhập mật khẩu mới" required />
-              <button type="button" class="toggle-password" data-target="new-password">👁️</button>
+    <!-- MÀN HÌNH ĐĂNG NHẬP / ĐĂNG KÝ -->
+    <div id="authScreen" class="fixed inset-0 bg-[#0b0f19] z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="max-w-md w-full bg-[#121826] border border-slate-800/80 p-8 rounded-3xl shadow-2xl space-y-6 text-white my-auto">
+            
+            <!-- Logo / Tiêu đề đầu trang -->
+            <div class="text-center space-y-2">
+                <div class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-rose-500/10 text-rose-500 mb-1">
+                    <i class="fa-solid fa-seedling text-lg"></i>
+                </div>
+                <h1 class="text-xl font-black tracking-wider text-rose-500">Cây Tiền</h1>
+                <p class="text-xs text-slate-400">Hệ thống kiếm tiền trực tuyến tự động</p>
             </div>
 
-            <label for="confirm-password">Xác nhận mật khẩu</label>
-            <div class="password-container">
-              <input id="confirm-password" type="password" placeholder="Nhập lại mật khẩu" required />
-              <button type="button" class="toggle-password" data-target="confirm-password">👁️</button>
+            <!-- Nút chuyển đổi Tab (Đăng Nhập / Đăng Ký) -->
+            <div class="grid grid-cols-2 p-1.5 bg-[#090d16] rounded-2xl border border-slate-800">
+                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white cursor-pointer flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Đăng Nhập</span>
+                </button>
+                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="py-2.5 rounded-xl text-xs font-bold transition bg-rose-600 text-white shadow-lg shadow-rose-600/30 cursor-pointer flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Đăng Ký</span>
+                </button>
             </div>
 
-            <button type="submit" class="submit-btn">Cập nhật mật khẩu</button>
-          </form>
-        </section>
+            <!-- FORM ĐĂNG NHẬP -->
+            <div id="loginFormContainer" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên tài khoản</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="loginUser" placeholder="Nhập tên tài khoản..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="loginPass" placeholder="Nhập mật khẩu..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-10 text-xs text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
 
-        <section id="success-step" class="step success-step">
-          <div class="success-icon">✓</div>
-          <h2>Mật khẩu đã được cập nhật</h2>
-          <p>Bạn có thể đăng nhập lại bằng mật khẩu mới.</p>
-          <button id="reset-btn" type="button" class="secondary-btn">Quay lại</button>
-        </section>
-      </div>
-    </main>
+                <!-- ReCAPTCHA Giả Lập -->
+                <div class="bg-[#090d16] border border-slate-800 p-4 rounded-xl flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <input type="checkbox" id="robotCheckbox" onchange="handleRobotVerify(this)" class="w-4 h-4 accent-rose-600 rounded cursor-pointer">
+                        <span id="recaptchaStatus" class="text-xs text-slate-300 font-medium">Tôi không phải là người máy</span>
+                    </div>
+                    <div id="captchaIconContainer">
+                        <i class="fa-solid fa-shield text-slate-600 text-base"></i>
+                    </div>
+                </div>
 
-    <script src="script.js"></script>
-  </body>
-              </html>
+                <button id="loginBtn" disabled onclick="handleLogin()" class="w-full py-4 rounded-xl bg-slate-800 text-slate-400 font-bold text-xs transition cursor-not-allowed shadow-lg">Đăng Nhập Ngay</button>
+            </div>
+
+            <!-- FORM ĐĂNG KÝ -->
+            <div id="registerFormContainer" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên tài khoản</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="regUser" placeholder="Từ 3–30 ký tự (chữ và số)..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Địa chỉ Email</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="regEmail" placeholder="Nhập địa chỉ email hợp lệ..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="regPass" placeholder="Tối thiểu 6 ký tự..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-10 text-xs text-white focus:outline-none focus:border-rose-500">
+                        <button type="button" onclick="togglePasswordVisibility('regPass', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white text-xs cursor-pointer"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Xác nhận mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu vừa đặt..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-10 text-xs text-white focus:outline-none focus:border-rose-500">
+                        <button type="button" onclick="togglePasswordVisibility('regPassConfirm', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-white text-xs cursor-pointer"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mã giới thiệu <span class="text-slate-500 font-normal">(Nếu có)</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500 text-xs"><i class="fa-solid fa-tag"></i></span>
+                        <input type="text" id="regRef" placeholder="Tên người giới thiệu (tùy chọn)..." class="w-full bg-[#090d16] border border-slate-800 rounded-xl py-3.5 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-rose-500">
+                    </div>
+                </div>
+
+                <div class="bg-rose-500/10 border border-rose-500/20 p-3 rounded-xl text-[11px] text-rose-300">
+                    <i class="fa-solid fa-triangle-exclamation"></i> <strong>Anti-Ban:</strong> Mỗi địa chỉ IP (<span id="regIpIndicator" class="font-mono underline">Đang tải...</span>) chỉ được tạo tối đa **2 tài khoản**.
+                </div>
+
+                <button onclick="handleRegister()" class="w-full py-4 rounded-xl bg-gradient-to-r from-rose-600 to-pink-600 text-white font-bold text-xs hover:opacity-95 transition cursor-pointer shadow-lg shadow-rose-600/30">
+                    <i class="fa-solid fa-user-plus mr-1"></i> Đăng Ký Tài Khoản
+                </button>
+            </div>
+
+            <!-- Footer nhỏ -->
+            <div class="text-center pt-2 border-t border-slate-800/60 text-[11px] text-slate-500">
+                <span>© Cây Tiền • Bảo mật an toàn tuyệt đối</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- GIAO DIỆN ỨNG DỤNG CHÍNH -->
+    <div id="appContainer" class="flex h-full w-full hidden overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-[#121826] border-r border-slate-800 flex flex-col justify-between hidden sm:flex">
+            <div>
+                <div class="p-6 border-b border-slate-800/80 flex items-center space-x-3">
+                    <div id="sidebarAvatarContainer" class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-500 flex items-center justify-center font-bold overflow-hidden shadow-inner">S</div>
+                    <div>
+                        <h4 id="sidebarUsername" class="font-extrabold text-xs text-white truncate max-w-[120px]">User</h4>
+                        <span class="text-[10px] text-rose-400 font-bold uppercase">Cây Tiền Pro</span>
+                    </div>
+                </div>
+                <nav class="p-4 space-y-1.5">
+                    <a href="#" onclick="switchTab('Dashboard'); return false;" data-page="Dashboard" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-rose-400 bg-rose-500/10 transition"><i class="fa-solid fa-chart-pie w-5"></i><span class="text-xs">Tổng Quan</span></a>
+                    <a href="#" onclick="switchTab('Task Traffic'); return false;" data-page="Task Traffic" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-bolt w-5"></i><span class="text-xs">Task Traffic</span></a>
+                    <a href="#" onclick="switchTab('Withdraw'); return false;" data-page="Withdraw" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-wallet w-5"></i><span class="text-xs">Rút Tiền</span></a>
+                    <a href="#" onclick="switchTab('History'); return false;" data-page="History" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-clock-rotate-left w-5"></i><span class="text-xs">Lịch Sử</span></a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800/80">
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 py-3 rounded-xl bg-rose-500/10 text-rose-400 font-bold text-xs hover:bg-rose-500/20 transition cursor-pointer"><i class="fa-solid fa-right-from-bracket"></i><span>Đăng Xuất</span></button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden bg-[#090d16]">
+            <header class="h-16 bg-[#121826] border-b border-slate-800 px-6 flex items-center justify-between">
+                <h3 id="pageTitle" class="text-sm font-extrabold text-white">Tổng Quan</h3>
+                <div class="flex items-center space-x-3">
+                    <div id="headerAvatarContainer" class="w-8 h-8 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center font-bold overflow-hidden text-xs">S</div>
+                    <span id="headerUsername" class="text-xs font-bold text-slate-300">User</span>
+                </div>
+            </header>
+            <div id="main-content" class="flex-1 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- MODAL NHÂN VẬT CHIBI CHÀO MỪNG -->
+    <div id="chibiModal" class="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-[#121826] rounded-3xl max-w-sm w-full p-6 text-center space-y-4 border border-rose-500/30 shadow-2xl relative">
+            <button onclick="closeChibiModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="chibiGreetingTitle" class="text-lg font-black text-white">Xin chào! 🎉</h3>
+            <p class="text-xs text-slate-400">Nhân vật của bạn đang chào mừng bạn quay trở lại.</p>
+            
+            <div class="w-full h-60 rounded-2xl bg-gradient-to-b from-[#090d16] to-rose-950/20 overflow-hidden flex items-center justify-center relative border border-slate-800">
+                <img id="chibiWavingImg" src="6c1ef031-21d6-41ed-8aa0-e1b3956015cb.jfif" alt="Chibi Waving" class="w-44 h-44 object-contain animate-wave relative z-10">
+            </div>
+            
+            <button onclick="closeChibiModal()" class="w-full py-3 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-700 transition cursor-pointer shadow-lg shadow-rose-600/30">Vào Bảng Điều Khiển</button>
+        </div>
+    </div>
+
+    <!-- Toast Thông Báo Nổi -->
+    <div id="toast" class="fixed bottom-5 right-5 z-[999999] transform translate-y-20 opacity-0 transition-all duration-300 bg-[#121826] text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-800 flex items-center space-x-3">
+        <span id="toastIcon"><i class="fa-solid fa-circle-check text-rose-500 text-base"></i></span>
+        <span id="toastMessage" class="text-xs font-bold">Thành công!</span>
+    </div>
+
+    <!-- SCRIPT XỬ LÝ CHỨC NĂNG -->
+    <script>
+        // --- 1. ANTI-BAN & BẢO MẬT ---
+        (function() {
+            const BAN_DB_KEY = "securesystem_banned_ips_v3";
+            let bannedList = [];
+            try { bannedList = JSON.parse(localStorage.getItem(BAN_DB_KEY)) || []; } catch(e) { bannedList = []; }
+
+            const hasUserscriptManager = 
+                typeof GM_info !== 'undefined' || 
+                typeof GM !== 'undefined' || 
+                typeof Violentmonkey !== 'undefined' ||
+                typeof Tampermonkey !== 'undefined' ||
+                document.querySelector('meta[name="tampermonkey"]');
+
+            if (hasUserscriptManager || bannedList.includes("banned_device_signature")) {
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.body.innerHTML = `<div style="position:fixed;inset:0;background:#0b0f19;color:white;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:20px;text-align:center"><h2>TRUY CẬP BỊ CHẶN: Phát hiện công cụ tự động hóa.</h2></div>`;
+                });
+                throw new Error("Anti-Ban Triggered.");
+            }
+        }());
+
+        let currentUserIp = "127.0.0.1";
+        async function fetchUserIP() { 
+            try { 
+                const res = await fetch('https://api.ipify.org?format=json'); 
+                const data = await res.json(); 
+                currentUserIp = data.ip; 
+            } catch (e) { 
+                currentUserIp = "local_ip"; 
+            } 
+            const regIp = document.getElementById('regIpIndicator');
+            if (regIp) regIp.textContent = currentUserIp; 
+        }
+
+        const DB_KEY = "caytien_database_v2";
+        function getDatabase() {
+            let data = localStorage.getItem(DB_KEY);
+            if (!data) {
+                const defaultData = { users: {}, ipRegistry: {} };
+                localStorage.setItem(DB_KEY, JSON.stringify(defaultData));
+                return defaultData;
+            }
+            return JSON.parse(data);
+        }
+        function saveDatabase(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+        function getUserData(username) { return getDatabase().users[username] || null; }
+
+        let currentSessionUser = sessionStorage.getItem('caytien_session') || null;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await fetchUserIP();
+            
+            setTimeout(() => {
+                const cfScreen = document.getElementById('cloudflareScreen');
+                if (cfScreen) {
+                    cfScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        cfScreen.classList.add('hidden');
+                        if (currentSessionUser && getUserData(currentSessionUser)) {
+                            initApp(currentSessionUser);
+                        } else {
+                            document.getElementById('authScreen').classList.remove('hidden');
+                        }
+                    }, 300);
+                }
+            }, 1000);
+
+            processGreenScreenBackground();
+        });
+
+        function processGreenScreenBackground() {
+            const img = document.getElementById('chibiWavingImg');
+            if (!img) return;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0);
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    let r = data[i], g = data[i + 1], b = data[i + 2];
+                    if (g > 80 && g > r * 1.3 && g > b * 1.3) {
+                        data[i + 3] = 0;
+                    }
+                }
+                ctx.putImageData(imgData, 0, 0);
+                img.src = canvas.toDataURL('image/png');
+            };
+            if (img.complete) img.onload();
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        function switchAuthTab(tab) {
+            const loginTab = document.getElementById('tabLoginBtn');
+            const regTab = document.getElementById('tabRegisterBtn');
+            const loginForm = document.getElementById('loginFormContainer');
+            const regForm = document.getElementById('registerFormContainer');
+
+            if (tab === 'login') {
+                loginTab.className = "py-2.5 rounded-xl text-xs font-bold transition bg-rose-600 text-white shadow-lg shadow-rose-600/30 cursor-pointer flex items-center justify-center space-x-2";
+                regTab.className = "py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white cursor-pointer flex items-center justify-center space-x-2";
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+            } else {
+                regTab.className = "py-2.5 rounded-xl text-xs font-bold transition bg-rose-600 text-white shadow-lg shadow-rose-600/30 cursor-pointer flex items-center justify-center space-x-2";
+                loginTab.className = "py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white cursor-pointer flex items-center justify-center space-x-2";
+                regForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function togglePasswordVisibility(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            }
+        }
+
+        let isRobotVerified = false;
+        function handleRobotVerify(checkbox) {
+            if (checkbox.checked) {
+                checkbox.disabled = true;
+                isRobotVerified = true;
+                document.getElementById('captchaIconContainer').innerHTML = '<i class="fa-solid fa-circle-check text-rose-500"></i>';
+                document.getElementById('recaptchaStatus').textContent = 'Xác minh thành công!';
+                const btn = document.getElementById('loginBtn');
+                btn.disabled = false;
+                btn.className = "w-full py-4 rounded-xl bg-rose-600 text-white font-bold text-xs transition cursor-pointer shadow-lg shadow-rose-600/30";
+            }
+        }
+
+        function handleRegister() {
+            const user = document.getElementById('regUser').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const confirmPass = document.getElementById('regPassConfirm').value.trim();
+            const ref = document.getElementById('regRef').value.trim();
+
+            if (!user || !email || !pass || !confirmPass) return showToast('Vui lòng điền đầy đủ thông tin bắt buộc!', 'error');
+            if (user.length < 3) return showToast('Tên tài khoản phải từ 3 ký tự trở lên!', 'error');
+            if (pass.length < 6) return showToast('Mật khẩu phải có tối thiểu 6 ký tự!', 'error');
+            if (pass !== confirmPass) return showToast('Xác nhận mật khẩu không khớp!', 'error');
+
+            const db = getDatabase();
+            if (!db.ipRegistry[currentUserIp]) db.ipRegistry[currentUserIp] = [];
+
+            if (db.ipRegistry[currentUserIp].length >= 2) {
+                return showToast('Anti-Ban: IP này đã đạt giới hạn tối đa 2 tài khoản đăng ký!', 'error');
+            }
+
+            if (db.users[user]) return showToast('Tên tài khoản này đã tồn tại!', 'error');
+
+            db.users[user] = {
+                password: pass,
+                email: email,
+                ref: ref,
+                balance: 10000,
+                history: [{ action: 'Đăng ký tài khoản thành công', amount: 10000, time: new Date().toLocaleString() }]
+            };
+
+            db.ipRegistry[currentUserIp].push(user);
+            saveDatabase(db);
+
+            showToast('Đăng ký tài khoản thành công!');
+            switchAuthTab('login');
+            document.getElementById('loginUser').value = user;
+        }
+
+        function handleLogin() {
+            if (!isRobotVerified) return showToast('Vui lòng hoàn thành xác minh người máy!', 'error');
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            
+            const db = getDatabase();
+            if (db.users[user] && db.users[user].password === pass) {
+                currentSessionUser = user;
+                sessionStorage.setItem('caytien_session', user);
+                document.getElementById('authScreen').classList.add('hidden');
+                initApp(user);
+                showToast('Đăng nhập thành công!');
+            } else {
+                showToast('Sai tài khoản hoặc mật khẩu!', 'error');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('caytien_session');
+            location.reload();
+        }
+
+        function initApp(username) {
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('sidebarUsername').textContent = username;
+            document.getElementById('headerUsername').textContent = username;
+            switchTab('Dashboard');
+
+            if (!sessionStorage.getItem('welcomed_' + username)) {
+                sessionStorage.setItem('welcomed_' + username, 'true');
+                setTimeout(() => showChibiModal(username), 600);
+            }
+        }
+
+        const pages = {
+            Dashboard: (u) => {
+                const data = getUserData(u);
+                return `<div class="p-6 lg:p-8 space-y-6"><div class="dashboard-glow rounded-3xl p-6 lg:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4"><div><p class="text-xs font-medium text-emerald-100">Số dư tài khoản (${u})</p><div class="mt-1 text-3xl lg:text-4xl font-black">${data.balance.toLocaleString('vi-VN')} đ</div><p class="text-xs text-emerald-200 mt-2"><i class="fa-solid fa-network-wired"></i> IP: ${currentUserIp}</p></div><button onclick="switchTab('Task Traffic')" class="bg-white px-5 py-3 text-xs font-bold text-emerald-800 rounded-xl shadow hover:bg-emerald-50 transition cursor-pointer">Làm Task Nhận Thưởng</button></div></div>`;
+            },
+            'Task Traffic': () => `<div class="p-6 lg:p-8 space-y-6"><h2 class="text-xl font-extrabold text-white">Danh Sách Task Traffic</h2><div class="bg-[#121826] p-5 rounded-2xl border border-slate-800 flex justify-between items-center"><div><h3 class="font-bold text-xs text-white">Traffic Web Kiếm Coin</h3><p class="text-[11px] text-slate-400 mt-1">Thưởng: <strong class="text-emerald-400">+1,000 đ</strong></p></div><button onclick="completeTask(1000)" class="px-4 py-2.5 bg-rose-600 text-white font-bold rounded-xl text-xs hover:bg-rose-700 transition cursor-pointer">Làm Task</button></div></div>`,
+            Withdraw: () => `<div class="p-6 lg:p-8 space-y-6 max-w-xl"><h2 class="text-xl font-extrabold text-white">Rút Tiền</h2><div class="bg-[#121826] p-6 rounded-2xl border border-slate-800 space-y-4"><div><label class="block text-xs font-bold uppercase text-slate-400 mb-1">Số tiền rút</label><input type="number" placeholder="Tối thiểu 10,000 đ" class="w-full bg-[#090d16] border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-rose-500"></div><button onclick="showToast('Tạo lệnh rút tiền thành công!')" class="w-full bg-rose-600 text-white font-bold p-3 rounded-xl text-xs hover:bg-rose-700 transition cursor-pointer">Xác Nhận Rút</button></div></div>`,
+            History: (u) => {
+                const data = getUserData(u);
+                const items = (data.history || []).map(h => `<div class="flex justify-between items-center p-4 bg-[#121826] rounded-xl border border-slate-800 text-xs"><div><p class="font-semibold text-white">${h.action}</p><span class="text-[10px] text-slate-500">${h.time}</span></div><span class="font-bold text-emerald-400">+${h.amount.toLocaleString()} đ</span></div>`).join('');
+                return `<div class="p-6 lg:p-8 space-y-4 max-w-xl"><h2 class="text-xl font-extrabold text-white">Lịch Sử Giao Dịch</h2><div class="space-y-3">${items}</div></div>`;
+            }
+        };
+
+        function switchTab(pageName) {
+            if (pages[pageName] && currentSessionUser) {
+                document.getElementById('main-content').innerHTML = pages[pageName](currentSessionUser);
+                document.getElementById('pageTitle').textContent = pageName;
+                
+                // Cập nhật trạng thái active cho menu sidebar
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    if (link.getAttribute('data-page') === pageName) {
+                        link.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-rose-400 bg-rose-500/10 transition";
+                    } else {
+                        link.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition";
+                    }
+                });
+            }
+        }
+
+        function completeTask(reward) {
+            const db = getDatabase();
+            db.users[currentSessionUser].balance += reward;
+            db.users[currentSessionUser].history.unshift({ action: 'Hoàn thành Task Traffic', amount: reward, time: new Date().toLocaleString() });
+            saveDatabase(db);
+            showToast(`Nhận thưởng +${reward}đ thành công!`);
+            switchTab('Dashboard');
+            showChibiModal(currentSessionUser);
+        }
+
+        function showChibiModal(username) {
+            document.getElementById('chibiGreetingTitle').textContent = `Xin chào, ${username}! 🎉`;
+            document.getElementById('chibiModal').classList.remove('hidden');
+        }
+
+        function closeChibiModal() {
+            document.getElementById('chibiModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
