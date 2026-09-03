@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Hệ Thống Link4m & Nhận Coin - ph.huyy & SecureSystem</title>
+    <!-- Script kiểm tra trình duyệt (lấy từ file source 2) -->
+    <script>
+        (function () {
+            const userAgent = navigator.userAgent;
+            const isCocCoc = /coc_coc_browser|CocCoc/i.test(userAgent);
+            const isChrome = /Chrome/i.test(userAgent) && !/Edg|OPR|SamsungBrowser|UCBrowser|Brave/i.test(userAgent);
+
+            if (!isCocCoc && !isChrome) {
+                document.addEventListener('DOMContentLoaded', () => {
+                    document.body.innerHTML = '<div style="position:fixed;inset:0;background:#0f172a;color:white;display:flex;align-items:center;justify-content:center;font-family:sans-serif;padding:20px;text-align:center"><div style="max-width:400px;background:#1e293b;padding:30px;border-radius:20px;border:1px solid #ef4444"><h2 style="color:#f87171;margin-bottom:10px;font-size:22px">Trình Duyệt Không Được Hỗ Trợ</h2><p style="font-size:14px;color:#94a3b8;line-height:1.5">Hệ thống yêu cầu Google Chrome hoặc Cốc Cốc để truy cập.</p></div></div>';
+                });
+            }
+        }());
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #0284c7; --primary-dark: #0369a1; --bg-main: #0f172a; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: #fff; }
+        .dashboard-glow { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); }
+        .soft-grid { background-image: radial-gradient(#334155 1px, transparent 1px); background-size: 24px 24px; }
+        .metric-card { transition: all 0.25s ease; border: 1px solid #334155; }
+        .metric-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2); }
+        .page-fade { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .captcha-box { background: repeating-linear-gradient(45deg, #1e293b, #1e293b 10px, #334155 10px, #334155 20px); font-family: monospace; letter-spacing: 4px; user-select: none; }
+        .recaptcha-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        
+        /* Hiệu ứng đĩa nhạc vinyl xoay */
+        @keyframes spinVinyl {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .vinyl-spin {
+            animation: spinVinyl 6s linear infinite;
+        }
+        .vinyl-paused {
+            animation-play-state: paused;
+        }
+        @keyframes cfSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .cf-spinner { animation: cfSpin 1s linear infinite; }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 antialiased h-screen overflow-hidden flex flex-col selection:bg-sky-500 selection:text-white">
+
+    <!-- AUDIO NỀN CHILL -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://rr3---sn-a5m7zu76.googlevideo.com/videoplayback?expire=1756953584&ei=default&ip=0.0.0.0&id=aHZCqXyqFk4&itag=251&source=youtube" type="audio/webm">
+        <source src="https://www.youtube.com/embed/aHZCqXyqFk4" type="audio/mp4">
+        Trình duyệt của bạn không hỗ trợ thẻ âm thanh.
+    </audio>
+
+    <!-- NÚT ĐIỀU KHIỂN NHẠC NỀN & ĐĨA NHẠC XOAY -->
+    <div class="fixed top-4 right-4 z-[9999999] flex items-center space-x-3 bg-[#1e293b]/90 backdrop-blur-md border border-slate-700 px-3.5 py-2 rounded-full shadow-2xl">
+        <div id="miniVinyl" class="w-7 h-7 rounded-full bg-slate-900 border-2 border-slate-700 flex items-center justify-center relative vinyl-spin vinyl-paused shadow-inner cursor-pointer" onclick="toggleBackgroundMusic()" title="Nhấn để bật/tắt nhạc">
+            <div class="absolute w-2.5 h-2.5 bg-sky-400 rounded-full border border-slate-900 z-10"></div>
+            <div class="absolute inset-0 rounded-full border border-slate-700/50 scale-75"></div>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="flex items-center space-x-1.5">
+                <span class="relative flex h-2 w-2">
+                    <span id="musicPulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75 hidden"></span>
+                    <span id="musicDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+                </span>
+                <span id="musicLabel" class="text-[11px] font-bold text-slate-300">Nhạc Chill: Tắt</span>
+            </div>
+        </div>
+
+        <button onclick="toggleBackgroundMusic()" id="musicToggleBtn" class="w-7 h-7 bg-sky-600/20 text-sky-400 border border-sky-500/30 rounded-full flex items-center justify-center text-xs hover:bg-sky-600 hover:text-white transition cursor-pointer">
+            <i id="musicIcon" class="fa-solid fa-volume-xmark"></i>
+        </button>
+    </div>
+
+    <!-- MODAL RULES (QUY ĐỊNH & HƯỚNG DẪN) - Mặc định ẩn, chỉ hiện sau khi đăng nhập -->
+    <div id="rulesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
+        <div class="max-w-lg w-full bg-[#1e293b] border border-slate-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-[#172033]">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-sm text-white">Quy Định & Hướng Dẫn (Rules)</h3>
+                        <p class="text-[11px] text-slate-400">Đọc rules trước khi bắt đầu kiếm tiền tại web</p>
+                    </div>
+                </div>
+                <button onclick="closeRulesModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-5 text-xs">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2 text-sky-400 font-extrabold uppercase tracking-wider text-[11px]">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>Tài khoản & Xác thực</span>
+                    </div>
+                    <div class="space-y-2.5">
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-sky-500/10 text-sky-400 font-bold flex items-center justify-center shrink-0 text-[11px]">01</span>
+                            <p class="text-slate-300 leading-relaxed pt-0.5">Mỗi thành viên chỉ được sở hữu duy nhất 1 tài khoản (1 IP / 1 Tài khoản).</p>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-sky-500/10 text-sky-400 font-bold flex items-center justify-center shrink-0 text-[11px]">02</span>
+                            <p class="text-slate-300 leading-relaxed pt-0.5">Không chấp nhận tài khoản có cùng IP hoặc cùng thiết bị.</p>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center shrink-0 text-[11px]">03</span>
+                            <div class="pt-0.5">
+                                <span class="inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-[10px] mb-1">QUAN TRỌNG</span>
+                                <p class="text-slate-300 leading-relaxed">Trùng IP xảy ra khi nhiều tài khoản cùng mạng Wifi hoặc 4G.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-red-500/10 text-red-500 font-bold flex items-center justify-center shrink-0 text-[11px]">04</span>
+                            <div class="pt-0.5">
+                                <span class="inline-block px-2 py-0.5 rounded bg-red-500/20 text-red-500 font-bold text-[10px] mb-1">CẤM</span>
+                                <p class="text-slate-300 leading-relaxed">Sài tool, gian lận hoặc clone tài khoản sẽ bị khóa vĩnh viễn, mất tiền tự chịu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 bg-[#172033] flex items-center justify-between">
+                <label class="flex items-center space-x-2 text-[11px] text-slate-400 cursor-pointer select-none">
+                    <input type="checkbox" id="dontShowAgainRules" class="rounded bg-[#0f172a] border-slate-700 text-sky-500 focus:ring-0">
+                    <span>Không hiển thị trong 2 giờ</span>
+                </label>
+                <button onclick="closeRulesModal()" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition cursor-pointer shadow-lg shadow-rose-600/30">
+                    Đã hiểu Rules <i class="fa-solid fa-check ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Màn hình Cloudflare Verification giả lập -->
+    <div id="cloudflareScreen" class="fixed inset-0 z-[100000] bg-[#1e293b] text-white flex flex-col justify-between p-6 lg:p-12 select-none">
+        <div class="max-w-3xl mx-auto w-full pt-16 space-y-6 flex-1">
+            <div class="space-y-4">
+                <h2 class="text-2xl lg:text-3xl font-bold text-white">Thực hiện xác minh bảo mật</h2>
+                <p class="text-sm text-slate-400 leading-relaxed max-w-xl">Trang web này sử dụng dịch vụ bảo mật để chống bot độc hại. Trang này hiển thị trong khi trang web xác minh bạn không phải là bot.</p>
+            </div>
+            
+            <div class="pt-4">
+                <div class="w-full max-w-sm bg-[#0f172a] border border-slate-700 rounded-md p-3.5 flex items-center justify-between shadow-sm">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-6 h-6 border-2 border-slate-600 border-t-sky-400 rounded-full cf-spinner"></div>
+                        <span id="cfStatusText" class="text-sm font-medium text-slate-300">Đang xác minh...</span>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-xs font-black tracking-wider text-white">CLOUDFLARE</span>
+                        <div class="text-[9px] text-slate-500 space-x-1">
+                            <a href="#" class="hover:underline">Quyền riêng tư</a>
+                            <span>·</span>
+                            <a href="#" class="hover:underline">Giúp đỡ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-3xl mx-auto w-full border-t border-slate-800 pt-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+            <div>Ray ID: <span class="font-mono font-semibold text-slate-300">a35417165f64347c</span></div>
+            <div>Hiệu suất và Tính bảo mật của <a href="https://www.cloudflare.com" target="_blank" rel="noreferrer" class="font-semibold text-amber-500 hover:underline">Cloudflare</a></div>
+        </div>
+    </div>
+
+    <!-- Màn hình Đăng Nhập / Đăng Ký -->
+    <div id="authScreen" class="fixed inset-0 z-50 bg-[#0f172a] flex items-center justify-center p-4 dashboard-glow overflow-y-auto hidden">
+        <!-- Form Đăng Nhập -->
+        <div id="loginFormContainer" class="bg-[#1e293b] border border-slate-700 rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6 my-auto">
+            <div class="text-center space-y-2">
+                <div class="avatar-wrap mx-auto w-[90px] h-[90px] mb-2 flex items-center justify-center bg-sky-500/20 rounded-full border-4 border-[#38bdf8] text-2xl font-bold text-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.35)]">
+                    PH
+                </div>
+                <h2 class="text-2xl font-black text-white tracking-tight">Đăng Nhập ph.huyy</h2>
+                <p class="text-xs text-slate-400">Mỗi cá nhân sở hữu 1 tài khoản riêng biệt trên Database</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên đăng nhập</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="loginUser" placeholder="Nhập tài khoản..." class="w-full rounded-xl border border-slate-700 bg-[#0f172a] pl-10 pr-4 py-3.5 text-sm font-semibold text-white focus:border-sky-500 focus:bg-[#0f172a] focus:outline-none transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="loginPass" placeholder="••••••••" class="w-full rounded-xl border border-slate-700 bg-[#0f172a] pl-10 pr-4 py-3.5 text-sm font-semibold text-white focus:border-sky-500 focus:bg-[#0f172a] focus:outline-none transition">
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Xác minh bảo mật cổng vào</label>
+                    <div class="recaptcha-box">
+                        <label class="flex items-center gap-3 cursor-pointer select-none">
+                            <input type="checkbox" id="robotCheckbox" onchange="handleRobotVerify(this)" class="w-5 h-5 rounded border-slate-600 bg-[#0f172a] text-sky-500 focus:ring-sky-500 cursor-pointer">
+                            <span class="text-sm font-semibold text-slate-200">Tôi không phải là robot</span>
+                        </label>
+                        <div class="flex flex-col items-center">
+                            <div id="captchaIconContainer" class="text-slate-400 text-xl"><i class="fa-solid fa-shield-halved text-slate-500"></i></div>
+                            <span class="text-[9px] font-bold text-slate-400 tracking-wider mt-0.5">Turnstile</span>
+                        </div>
+                    </div>
+                    <p id="recaptchaStatus" class="text-[11px] text-slate-400 font-medium pl-1">Vui lòng hoàn thành xác minh để kích hoạt nút đăng nhập.</p>
+                </div>
+                <button id="loginBtn" onclick="handleLogin()" disabled class="w-full py-4 rounded-xl bg-slate-800 text-slate-500 font-bold text-sm transition shadow-none cursor-not-allowed">Đăng Nhập Ngay</button>
+            </div>
+            <div class="text-center border-t border-slate-800 pt-4 space-y-2">
+                <p class="text-xs text-slate-400">Chưa có tài khoản? <button onclick="switchAuthView('register')" class="text-sky-400 font-bold hover:underline cursor-pointer">Đăng ký tài khoản mới</button></p>
+            </div>
+        </div>
+
+        <!-- Form Đăng Ký -->
+        <div id="registerFormContainer" class="bg-[#1e293b] border border-slate-700 rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6 my-auto hidden">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-2xl bg-sky-600 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-sky-600/30 mx-auto"><i class="fa-solid fa-user-plus"></i></div>
+                <h2 class="text-2xl font-black text-white tracking-tight">Đăng Ký Tài Khoản</h2>
+                <p class="text-xs text-slate-400">Quy định: Mỗi mạng IP chỉ được cấp duy nhất 1 tài khoản.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên đăng nhập riêng</label>
+                    <input type="text" id="regUser" placeholder="Nhập tài khoản của bạn..." class="w-full rounded-xl border border-slate-700 bg-[#0f172a] px-4 py-3.5 text-sm font-semibold text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mật khẩu bảo mật</label>
+                    <input type="password" id="regPass" placeholder="••••••••" class="w-full rounded-xl border border-slate-700 bg-[#0f172a] px-4 py-3.5 text-sm font-semibold text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <div class="bg-[#0f172a] p-3 rounded-xl border border-slate-700 text-xs text-slate-400 flex items-center justify-between">
+                    <span>IP hiện tại của bạn:</span>
+                    <strong id="regIpIndicator" class="font-mono text-sky-400">Đang kiểm tra...</strong>
+                </div>
+                <button onclick="handleRegister()" class="w-full py-3.5 rounded-xl bg-sky-600 text-white font-bold text-sm hover:bg-sky-500 transition shadow-lg shadow-sky-600/30 cursor-pointer">Xác Nhận Đăng Ký (1 IP / 1 Tài Khoản)</button>
+            </div>
+            <div class="text-center border-t border-slate-800 pt-4">
+                <p class="text-xs text-slate-400">Đã có tài khoản? <button onclick="switchAuthView('login')" class="text-sky-400 font-bold hover:underline cursor-pointer">Quay lại đăng nhập</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Giao diện Dashboard chính -->
+    <div id="appContainer" class="flex h-screen overflow-hidden hidden">
+        <aside class="hidden w-64 flex-col border-r border-slate-800 bg-[#1e293b] md:flex shadow-sm z-10">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-sky-600 flex items-center justify-center text-white font-extrabold shadow-md">PH</div>
+                    <span class="text-xl font-extrabold tracking-tight text-white">ph.huyy<span class="text-sky-400">System</span></span>
+                </div>
+            </div>
+            <nav class="flex-1 space-y-1.5 p-4 overflow-y-auto">
+                <a href="#" data-page="Dashboard" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-sky-400 bg-sky-500/10 transition"><i class="fa-solid fa-chart-pie w-5"></i><span>Tổng quan</span></a>
+                <a href="#" data-page="Link Generator" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-link w-5 text-sky-400"></i><span>Tạo Link Link4m</span></a>
+                <a href="#" data-page="Task Traffic" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-fire w-5 text-rose-500"></i><span>Task Traffic</span></a>
+                <a href="#" data-page="Withdraw" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-wallet w-5 text-amber-500"></i><span>Rút Coin / Tiền</span></a>
+                <a href="#" data-page="History" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-clock-rotate-left w-5 text-sky-500"></i><span>Lịch sử giao dịch</span></a>
+                <a href="#" data-page="Settings" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-sliders w-5 text-slate-400"></i><span>Cài đặt</span></a>
+            </nav>
+            <div class="p-4 border-t border-slate-800 space-y-2">
+                <button onclick="openRulesModal()" class="w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 transition cursor-pointer"><i class="fa-solid fa-book-open text-sky-400"></i><span>Xem Rules</span></button>
+                <div class="bg-[#0f172a] rounded-xl p-3 flex items-center justify-between border border-slate-800">
+                    <div class="flex items-center space-x-3">
+                        <div id="sidebarAvatarContainer" class="w-8 h-8 rounded-full bg-sky-500/20 text-sky-400 font-bold flex items-center justify-center text-sm overflow-hidden"><span id="sidebarAvatarText">U</span></div>
+                        <div>
+                            <p id="sidebarUsername" class="text-xs font-bold text-white truncate max-w-[90px]">User</p>
+                            <p class="text-[10px] text-sky-400 font-medium">Verified IP</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" class="text-slate-400 hover:text-rose-500 transition cursor-pointer" title="Đăng xuất"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex flex-1 flex-col overflow-y-auto bg-[#0f172a]">
+            <header class="flex items-center justify-between border-b border-slate-800 bg-[#1e293b]/80 backdrop-blur-md px-6 py-4 sticky top-0 z-20">
+                <div>
+                    <h1 id="pageTitle" class="text-lg font-bold text-white tracking-tight">Tổng Quan Tài Khoản</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Mỗi người dùng độc lập & Kiểm soát giới hạn 1 tài khoản / 1 IP</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span id="headerUsername" class="text-sm font-semibold text-slate-300 hidden sm:inline">User</span>
+                    <div id="headerAvatarContainer" class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-600 font-bold text-white overflow-hidden"><span id="headerAvatarText">U</span></div>
+                </div>
+            </header>
+            <div id="main-content" class="flex-1 page-fade"></div>
+        </div>
+    </div>
+
+    <!-- Modal Captcha Toán Học -->
+    <div id="captchaModal" class="fixed inset-0 z-[999999] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-[#1e293b] border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5 text-white font-bold text-lg">
+                    <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center"><i class="fa-solid fa-shield-halved"></i></div>
+                    Xác Thực Chống Bot
+                </div>
+                <button onclick="closeCaptchaModal()" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between gap-3 bg-[#0f172a] p-4 rounded-xl border border-slate-800">
+                    <span id="captchaQuestion" class="captcha-box px-4 py-2 text-lg font-black text-sky-400 rounded-lg tracking-widest"></span>
+                </div>
+                <input type="number" id="captchaInput" placeholder="Nhập đáp án..." class="w-full rounded-xl border border-slate-700 bg-[#0f172a] p-3.5 text-sm font-semibold text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button onclick="closeCaptchaModal()" class="w-1/2 py-3 rounded-xl border border-slate-700 text-slate-300 font-bold text-sm hover:bg-slate-800 cursor-pointer">Hủy</button>
+                <button onclick="verifyMathCaptcha()" class="w-1/2 py-3 rounded-xl bg-sky-600 text-white font-bold text-sm hover:bg-sky-500 cursor-pointer">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Thông Báo -->
+    <div id="toast" class="fixed bottom-6 right-6 z-[9999999] flex items-center gap-3 rounded-xl bg-[#1e293b]/95 border border-slate-700 px-5 py-3.5 text-sm text-white shadow-2xl transition-all duration-300 translate-y-20 opacity-0 pointer-events-none">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-sky-400 text-lg"></i>
+        <span id="toastMessage">Thông báo</span>
+    </div>
+
+    <!-- Script Xử Lý Logic Toàn Cục -->
+    <script>
+        const API_KEY_LINK4M = "6a774c5d8c13a0050630ee0b";
+        let currentUserIp = "127.0.0.1";
+
+        async function fetchUserIP() { 
+            try { 
+                const response = await fetch('https://api.ipify.org?format=json'); 
+                const data = await response.json(); 
+                currentUserIp = data.ip; 
+            } catch (e) { 
+                currentUserIp = "local_browser"; 
+            } 
+            const ipIndicator = document.getElementById('regIpIndicator');
+            if (ipIndicator) ipIndicator.textContent = currentUserIp; 
+        }
+
+        const DB_KEY = "phhuyy_securesystem_database_unique_ip_v1";
+
+        function getDatabase() { 
+            let data = localStorage.getItem(DB_KEY); 
+            if (!data) { 
+                const defaultData = { users: {}, ipRegistry: {} }; 
+                localStorage.setItem(DB_KEY, JSON.stringify(defaultData)); 
+                return defaultData; 
+            } 
+            return JSON.parse(data); 
+        }
+
+        function saveDatabase(db) { 
+            localStorage.setItem(DB_KEY, JSON.stringify(db)); 
+        }
+
+        function getUserData(username) { 
+            return getDatabase().users[username] || null; 
+        }
+
+        function updateUserData(username, updaterFn) { 
+            const db = getDatabase(); 
+            if (db.users[username]) { 
+                updaterFn(db.users[username]); 
+                saveDatabase(db); 
+            } 
+        }
+
+        let currentSessionUser = sessionStorage.getItem('current_username') || null; 
+        const authScreen = document.querySelector('#authScreen'); 
+        const loginFormContainer = document.querySelector('#loginFormContainer'); 
+        const registerFormContainer = document.querySelector('#registerFormContainer'); 
+        const appContainer = document.querySelector('#appContainer'); 
+        const pageTitle = document.querySelector('#pageTitle'); 
+        const mainContent = document.querySelector('#main-content'); 
+        const toast = document.querySelector('#toast'); 
+        const toastMessage = document.querySelector('#toastMessage'); 
+        const toastIcon = document.querySelector('#toastIcon');
+
+        // Modal Rules & Announcement helpers
+        function openRulesModal() { document.getElementById('rulesModal').classList.remove('hidden'); }
+        function closeRulesModal() {
+            if (document.getElementById('dontShowAgainRules').checked) {
+                localStorage.setItem('hide_rules_until', Date.now() + 2 * 3600 * 1000);
+            }
+            document.getElementById('rulesModal').classList.add('hidden');
+        }
+
+        // Điều khiển nhạc nền Chill
+        let isMusicPlaying = false;
+        function toggleBackgroundMusic() {
+            const music = document.getElementById('bgMusic');
+            const musicIcon = document.getElementById('musicIcon');
+            const musicLabel = document.getElementById('musicLabel');
+            const miniVinyl = document.getElementById('miniVinyl');
+
+            if (isMusicPlaying) {
+                music.pause();
+                isMusicPlaying = false;
+                musicIcon.className = "fa-solid fa-volume-xmark";
+                musicLabel.textContent = "Nhạc Chill: Tắt";
+                if (miniVinyl) miniVinyl.classList.add('vinyl-paused');
+            } else {
+                music.play().then(() => {
+                    isMusicPlaying = true;
+                    musicIcon.className = "fa-solid fa-volume-high";
+                    musicLabel.textContent = "Nhạc Chill: Đang phát";
+                    if (miniVinyl) miniVinyl.classList.remove('vinyl-paused');
+                }).catch(() => showToast('Trình duyệt chặn phát nhạc tự động!', 'error'));
+            }
+        }
+
+        // Đồng hồ hệ thống
+        function startRealtimeClock() {
+            const clockEl = document.getElementById('realtimeClock');
+            const dateEl = document.getElementById('realtimeDate');
+            if (!clockEl) return;
+            setInterval(() => {
+                const now = new Date();
+                clockEl.textContent = now.toTimeString().split(' ')[0];
+                if (dateEl) dateEl.textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }, 1000);
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => { 
+            await fetchUserIP(); 
+            
+            // Xử lý tham số trả về từ Link4m ?action=claim
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+
+            setTimeout(() => {
+                const cfStatus = document.getElementById('cfStatusText');
+                if (cfStatus) cfStatus.textContent = "Thành công!";
+            }, 1200);
+
+            setTimeout(() => { 
+                const cfScreen = document.getElementById('cloudflareScreen'); 
+                if (cfScreen) {
+                    cfScreen.style.transition = 'opacity 0.4s ease'; 
+                    cfScreen.style.opacity = '0'; 
+                    setTimeout(() => { 
+                        cfScreen.classList.add('hidden'); 
+                        if (action === 'claim') {
+                            processLink4mClaim();
+                        } else if (currentSessionUser && getUserData(currentSessionUser)) {
+                            initApp(currentSessionUser); 
+                        } else if (authScreen) {
+                            authScreen.classList.remove('hidden'); 
+                        }
+                    }, 400); 
+                }
+            }, 1800); 
+        });
+
+        function processLink4mClaim() {
+            let db = getDatabase();
+            if (!currentSessionUser || !db.users[currentSessionUser]) {
+                let allUsers = Object.keys(db.users);
+                if (allUsers.length > 0) {
+                    currentSessionUser = allUsers[0];
+                } else {
+                    db.users["guest"] = { password: "123", balance: 500, tasksCompleted: 1, monthlyIncome: 500, referrals: 0, avatarUrl: '', ip: currentUserIp, history: [] };
+                    currentSessionUser = "guest";
+                }
+            }
+
+            updateUserData(currentSessionUser, u => {
+                u.balance += 500;
+                u.tasksCompleted += 1;
+                u.monthlyIncome += 500;
+                u.history.unshift({
+                    action: 'Hoàn thành vượt Link4m',
+                    amount: 500,
+                    time: new Date().toLocaleString()
+                });
+            });
+
+            sessionStorage.setItem('current_username', currentSessionUser);
+            alert("Vượt Link4m thành công! Đã cộng +500 Coin vào tài khoản: " + currentSessionUser);
+            window.location.href = window.location.pathname; 
+        }
+
+        function showToast(message, type = 'success') { 
+            if(!toastMessage || !toastIcon || !toast) return;
+            toastMessage.textContent = message; 
+            toastIcon.className = type === 'success' ? "fa-solid fa-circle-check text-sky-400 text-lg" : "fa-solid fa-triangle-exclamation text-amber-400 text-lg"; 
+            toast.classList.remove('translate-y-20', 'opacity-0'); 
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000); 
+        }
+
+        function switchAuthView(view) { 
+            if(loginFormContainer && registerFormContainer) {
+                loginFormContainer.classList.toggle('hidden', view === 'register'); 
+                registerFormContainer.classList.toggle('hidden', view !== 'register'); 
+            }
+        }
+
+        let isRobotVerified = false;
+
+        function handleRobotVerify(checkbox) { 
+            if (checkbox.checked) { 
+                checkbox.disabled = true; 
+                document.getElementById('captchaIconContainer').innerHTML = '<i class="fa-solid fa-spinner fa-spin text-sky-400"></i>'; 
+                document.getElementById('recaptchaStatus').textContent = 'Đang xác thực bảo mật...'; 
+                setTimeout(() => { 
+                    isRobotVerified = true; 
+                    document.getElementById('captchaIconContainer').innerHTML = '<i class="fa-solid fa-circle-check text-sky-400"></i>'; 
+                    document.getElementById('recaptchaStatus').textContent = 'Xác minh thành công!'; 
+                    const loginBtn = document.getElementById('loginBtn'); 
+                    if(loginBtn) {
+                        loginBtn.disabled = false; 
+                        loginBtn.className = 'w-full py-4 rounded-xl bg-sky-600 text-white font-bold text-sm hover:bg-sky-500 transition cursor-pointer'; 
+                    }
+                }, 700); 
+            } 
+        }
+
+        function handleRegister() { 
+            const regUserElem = document.getElementById('regUser');
+            const regPassElem = document.getElementById('regPass');
+            if(!regUserElem || !regPassElem) return;
+
+            const user = regUserElem.value.trim(); 
+            const pass = regPassElem.value.trim(); 
+            if (!user || !pass) return showToast('Vui lòng điền đầy đủ thông tin!', 'error'); 
+            
+            const db = getDatabase(); 
+            if (db.ipRegistry[currentUserIp]) return showToast(`IP đã đăng ký tài khoản: "${db.ipRegistry[currentUserIp]}"`, 'error'); 
+            if (db.users[user]) return showToast('Tên tài khoản này đã có người sử dụng!', 'error'); 
+            
+            db.users[user] = { 
+                password: pass, 
+                balance: 20000, 
+                tasksCompleted: 0, 
+                monthlyIncome: 20000, 
+                referrals: 0, 
+                avatarUrl: '', 
+                ip: currentUserIp, 
+                history: [{ action: 'Khởi tạo tài khoản độc lập', amount: 20000, time: new Date().toLocaleString() }] 
+            }; 
+            db.ipRegistry[currentUserIp] = user; 
+            saveDatabase(db); 
+            showToast('Đăng ký thành công!'); 
+            switchAuthView('login'); 
+            const loginUserElem = document.getElementById('loginUser');
+            if(loginUserElem) loginUserElem.value = user; 
+        }
+
+        function handleLogin() { 
+            if (!isRobotVerified) return showToast('Vui lòng hoàn thành xác minh bảo mật!', 'error'); 
+            const loginUserElem = document.getElementById('loginUser');
+            const loginPassElem = document.getElementById('loginPass');
+            if(!loginUserElem || !loginPassElem) return;
+
+            const user = loginUserElem.value.trim(); 
+            const pass = loginPassElem.value.trim(); 
+            const db = getDatabase(); 
+            
+            if (db.users[user] && db.users[user].password === pass) { 
+                currentSessionUser = user; 
+                sessionStorage.setItem('current_username', user); 
+                if(authScreen) authScreen.classList.add('hidden'); 
+                initApp(user); 
+                showToast('Đăng nhập thành công!'); 
+            } else {
+                showToast('Sai tài khoản hoặc mật khẩu!', 'error'); 
+            }
+        }
+
+        function handleLogout() { 
+            currentSessionUser = null; 
+            sessionStorage.removeItem('current_username'); 
+            if(appContainer) appContainer.classList.add('hidden'); 
+            if(authScreen) authScreen.classList.remove('hidden'); 
+            isRobotVerified = false; 
+            const checkbox = document.getElementById('robotCheckbox'); 
+            if(checkbox) {
+                checkbox.checked = false; 
+                checkbox.disabled = false; 
+            }
+            const loginBtn = document.getElementById('loginBtn');
+            if(loginBtn) loginBtn.disabled = true; 
+            showToast('Đã đăng xuất an toàn!'); 
+        }
+
+        function initApp(username) { 
+            if(appContainer) appContainer.classList.remove('hidden'); 
+            const sidebarUser = document.getElementById('sidebarUsername');
+            const headerUser = document.getElementById('headerUsername');
+            if(sidebarUser) sidebarUser.textContent = username; 
+            if(headerUser) headerUser.textContent = username; 
+            updateAvatarDisplay(username); 
+            switchTab('Dashboard'); 
+
+            // Hiển thị bảng Rules tự động ngay sau khi đăng nhập thành công (nếu chưa bật tùy chọn ẩn trong 2h)
+            const hideUntil = localStorage.getItem('hide_rules_until');
+            if (!hideUntil || Date.now() >= parseInt(hideUntil)) {
+                setTimeout(() => {
+                    openRulesModal();
+                }, 500);
+            }
+        }
+
+        function updateAvatarDisplay(username) { 
+            const userData = getUserData(username); 
+            [document.getElementById('sidebarAvatarContainer'), document.getElementById('headerAvatarContainer')].forEach(container => { 
+                if (!container) return; 
+                container.innerHTML = userData && userData.avatarUrl ? `<img src="${userData.avatarUrl}" class="w-full h-full object-cover">` : `<span class="font-bold">${username.charAt(0).toUpperCase()}</span>`; 
+            }); 
+        }
+
+        const pages = {
+            Dashboard: (u) => { 
+                const data = getUserData(u); 
+                return `
+                    <main class="soft-grid min-h-full space-y-6 p-6 lg:p-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="dashboard-glow rounded-3xl p-6 lg:p-8 text-white shadow-xl flex flex-col justify-between lg:col-span-2">
+                                <div>
+                                    <p class="text-xs font-medium text-sky-100">Số Dư Coin Hiện Tại (${u})</p>
+                                    <div class="mt-1 text-3xl lg:text-4xl font-black">${data.balance.toLocaleString('vi-VN')} Coin</div>
+                                    <p class="text-xs text-sky-200 mt-2"><i class="fa-solid fa-network-wired"></i> IP xác thực: ${data.ip || currentUserIp}</p>
+                                </div>
+                                <div class="mt-6 flex gap-3">
+                                    <button onclick="switchTab('Link Generator')" class="bg-white px-5 py-3 text-xs font-bold text-sky-900 rounded-xl shadow hover:bg-sky-50 transition cursor-pointer">Tạo Link Rút Gọn</button>
+                                    <button onclick="switchTab('Task Traffic')" class="bg-sky-800/40 border border-sky-400/30 px-5 py-3 text-xs font-bold text-white rounded-xl shadow hover:bg-sky-800/60 transition cursor-pointer">Làm Task Nhận Coin</button>
+                                </div>
+                            </div>
+                            <div class="bg-[#1e293b] border border-slate-700 rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Thời Gian Hệ Thống</span>
+                                <div class="text-center my-auto py-2">
+                                    <div id="realtimeClock" class="text-3xl font-black text-white font-mono">00:00:00</div>
+                                    <div id="realtimeDate" class="text-xs text-slate-400 mt-1">Đang tải...</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid gap-5 sm:grid-cols-3">
+                            <div class="metric-card bg-[#1e293b] p-5 rounded-2xl shadow-sm"><span class="text-xs font-bold uppercase text-slate-400">Task hoàn thành</span><strong class="mt-2 block text-2xl font-extrabold text-white">${data.tasksCompleted}</strong></div>
+                            <div class="metric-card bg-[#1e293b] p-5 rounded-2xl shadow-sm"><span class="text-xs font-bold uppercase text-slate-400">Tổng thu nhập</span><strong class="mt-2 block text-2xl font-extrabold text-white">${data.monthlyIncome.toLocaleString('vi-VN')} Coin</strong></div>
+                            <div class="metric-card bg-[#1e293b] p-5 rounded-2xl shadow-sm"><span class="text-xs font-bold uppercase text-slate-400">Trạng thái IP</span><strong class="mt-2 block text-xs font-extrabold text-sky-400 mt-1">Đã khóa độc quyền 1/1</strong></div>
+                        </div>
+                    </main>
+                `; 
+                startRealtimeClock();
+            },
+            'Link Generator': () => `
+                <main class="soft-grid min-h-full space-y-6 p-6 lg:p-8 max-w-xl">
+                    <h2 class="text-xl font-extrabold text-white">Tạo Link Rút Gọn Link4m</h2>
+                    <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">URL Đích Cần Rút Gọn</label>
+                            <input type="text" id="targetUrlInput" placeholder="https://example.com" class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                        </div>
+                        <button onclick="generateLink4m()" id="genBtn" class="w-full py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition cursor-pointer">Tạo Link Ngay</button>
+                        
+                        <div id="resultBox" class="hidden space-y-2 pt-2">
+                            <label class="block text-xs font-bold text-emerald-400">Link Rút Gọn Thành Công:</label>
+                            <input type="text" id="shortResultOutput" readonly class="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-300">
+                        </div>
+                    </div>
+                </main>
+            `,
+            'Task Traffic': () => `
+                <main class="soft-grid min-h-full space-y-6 p-6 lg:p-8">
+                    <h2 class="text-2xl font-extrabold text-white">Task Traffic Kiếm Thưởng</h2>
+                    <div class="bg-[#1e293b] p-5 rounded-2xl border border-slate-700 flex justify-between items-center shadow-sm">
+                        <div>
+                            <h3 class="font-bold text-white">Vượt Link4m Nhận Thưởng</h3>
+                            <p class="text-xs text-slate-400 mt-1">Thưởng: <strong class="text-sky-400">+500 Coin</strong> vào tài khoản cá nhân</p>
+                        </div>
+                        <button onclick="openCaptchaModal(() => completeTask(500, 'Task Traffic Link4m'))" class="px-5 py-3 bg-sky-600 text-white font-bold rounded-xl text-xs hover:bg-sky-500 transition cursor-pointer">Nhận Task</button>
+                    </div>
+                </main>
+            `,
+            Withdraw: () => `
+                <main class="soft-grid min-h-full space-y-6 p-6 lg:p-8 max-w-xl">
+                    <h2 class="text-2xl font-extrabold text-white">Rút Coin Về Ví</h2>
+                    <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-1">Số lượng Coin muốn rút</label>
+                            <input type="number" id="withdrawAmount" placeholder="Tối thiểu 10,000 Coin..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                        </div>
+                        <button onclick="openCaptchaModal(processWithdraw)" class="w-full py-3.5 bg-sky-600 text-white font-bold rounded-xl text-xs hover:bg-sky-500 transition cursor-pointer">Xác Nhận Rút</button>
+                    </div>
+                </main>
+            `,
+            History: (u) => { 
+                const data = getUserData(u); 
+                const historyHtml = data.history.map(item => `
+                    <div class="flex items-center justify-between p-4 bg-[#1e293b] border border-slate-700 rounded-xl text-xs">
+                        <div><p class="font-bold text-white">${item.action}</p><p class="text-[10px] text-slate-400">${item.time || 'Vừa xong'}</p></div>
+                        <span class="font-black ${item.amount >= 0 ? 'text-sky-400' : 'text-red-400'}">${item.amount >= 0 ? '+' : ''}${item.amount.toLocaleString('vi-VN')} Coin</span>
+                    </div>
+                `).join(''); 
+                return `<main class="soft-grid min-h-full space-y-4 p-6 lg:p-8 max-w-2xl"><h2 class="text-2xl font-extrabold text-white">Lịch Sử Giao Dịch Riêng Tư</h2><div class="space-y-3">${historyHtml || '<p class="text-slate-400">Chưa có lịch sử giao dịch.</p>'}</div></main>`; 
+            },
+            Settings: () => `
+                <main class="soft-grid min-h-full space-y-6 p-6 lg:p-8 max-w-xl">
+                    <h2 class="text-2xl font-extrabold text-white">Cài Đặt Tài Khoản</h2>
+                    <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 shadow-sm space-y-4">
+                        <p class="text-xs text-slate-400">Tải lên ảnh đại diện riêng cho tài khoản:</p>
+                        <input type="file" accept="image/*" onchange="handleAvatarUpload(event)" class="text-xs text-slate-300">
+                    </div>
+                </main>
+            `
+        };
+
+        function switchTab(pageName) { 
+            if (pages[pageName] && currentSessionUser) { 
+                if(mainContent) mainContent.innerHTML = pages[pageName](currentSessionUser); 
+                if(pageTitle) pageTitle.textContent = pageName; 
+                document.querySelectorAll('.nav-link').forEach(item => { 
+                    item.className = item.dataset.page === pageName ? 'nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-sky-400 bg-sky-500/10 transition' : 'nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition'; 
+                }); 
+                if (pageName === 'Dashboard') startRealtimeClock();
+            } 
+        }
+
+        let pendingCallback = null; 
+        let captchaAnswer = 0;
+
+        function openCaptchaModal(callback) { 
+            pendingCallback = callback; 
+            const a = Math.floor(Math.random() * 8) + 2; 
+            const b = Math.floor(Math.random() * 8) + 2; 
+            captchaAnswer = a + b; 
+            const qElem = document.getElementById('captchaQuestion');
+            const iElem = document.getElementById('captchaInput');
+            const mElem = document.getElementById('captchaModal');
+            if(qElem) qElem.textContent = `${a} + ${b} = ?`; 
+            if(iElem) iElem.value = ''; 
+            if(mElem) mElem.classList.remove('hidden'); 
+        }
+
+        function closeCaptchaModal() { 
+            const mElem = document.getElementById('captchaModal');
+            if(mElem) mElem.classList.add('hidden'); 
+            pendingCallback = null; 
+        }
+
+        function verifyMathCaptcha() { 
+            const iElem = document.getElementById('captchaInput');
+            if(!iElem) return;
+            if (Number(iElem.value) !== captchaAnswer) return showToast('Đáp án xác thực không đúng!', 'error'); 
+            const callback = pendingCallback; 
+            closeCaptchaModal(); 
+            if (callback) callback(); 
+        }
+
+        async function generateLink4m() {
+            let target = document.getElementById('targetUrlInput').value.trim();
+            if (!target) return showToast('Vui lòng nhập URL!', 'error');
+
+            let currentDomainRedirect = window.location.origin + window.location.pathname + "?action=claim";
+            let fullApiUrl = `https://link4m.co/api-shorten/v2?api=${API_KEY_LINK4M}&url=${encodeURIComponent(currentDomainRedirect)}`;
+
+            try {
+                let res = await fetch(fullApiUrl);
+                let data = await res.json();
+                let shortUrl = data.shortenedUrl || data.url || data.result;
+                if (shortUrl) {
+                    document.getElementById('resultBox').classList.remove('hidden');
+                    document.getElementById('shortResultOutput').value = shortUrl;
+                    showToast('Tạo link rút gọn thành công!');
+                } else {
+                    showToast('Không tạo được link từ API!', 'error');
+                }
+            } catch(e) {
+                showToast('Lỗi kết nối API Link4m!', 'error');
+            }
+        }
+
+        function completeTask(reward, taskName) { 
+            updateUserData(currentSessionUser, user => { 
+                user.balance += reward; 
+                user.tasksCompleted += 1; 
+                user.monthlyIncome += reward; 
+                user.history.unshift({ action: `Hoàn thành task: ${taskName}`, amount: reward, time: new Date().toLocaleString() }); 
+            }); 
+            showToast(`Nhận thưởng +${reward} Coin thành công!`); 
+            switchTab('Dashboard'); 
+        }
+
+        function processWithdraw() { 
+            const amountElem = document.getElementById('withdrawAmount');
+            if(!amountElem) return;
+            const amount = parseInt(amountElem.value); 
+            const user = getUserData(currentSessionUser); 
+            if (!amount || amount < 10000) return showToast('Số lượng rút tối thiểu là 10,000 Coin!', 'error'); 
+            if (amount > user.balance) return showToast('Số dư Coin không đủ!', 'error'); 
+            
+            updateUserData(currentSessionUser, u => { 
+                u.balance -= amount; 
+                u.history.unshift({ action: 'Rút Coin', amount: -amount, time: new Date().toLocaleString() }); 
+            }); 
+            showToast('Tạo lệnh rút Coin thành công!'); 
+            switchTab('Dashboard'); 
+        }
+
+        function handleAvatarUpload(e) { 
+            const file = e.target.files[0]; 
+            if (!file) return; 
+            const reader = new FileReader(); 
+            reader.onload = event => { 
+                updateUserData(currentSessionUser, u => { 
+                    u.avatarUrl = event.target.result; 
+                }); 
+                updateAvatarDisplay(currentSessionUser); 
+                showToast('Đổi ảnh đại diện thành công!'); 
+            }; 
+            reader.readAsDataURL(file); 
+        }
+
+        document.querySelectorAll('.nav-link').forEach(link => link.addEventListener('click', e => { 
+            e.preventDefault(); 
+            switchTab(link.dataset.page); 
+        }));
+    </script>
+</body>
+</html>
