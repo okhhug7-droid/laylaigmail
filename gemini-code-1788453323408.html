@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Hệ Thống Link4m & Nhận Coin - ph.huyy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #fff; }
+        .dashboard-glow { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); }
+        
+        /* Hiệu ứng đĩa nhạc vinyl xoay */
+        @keyframes spinVinyl {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .vinyl-spin {
+            animation: spinVinyl 6s linear infinite;
+        }
+        .vinyl-paused {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-100 antialiased h-screen overflow-hidden flex flex-col">
+
+    <!-- AUDIO NỀN CHILL -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://rr3---sn-a5m7zu76.googlevideo.com/videoplayback?expire=1756953584&ei=default&ip=0.0.0.0&id=aHZCqXyqFk4&itag=251&source=youtube" type="audio/webm">
+        <source src="https://www.youtube.com/embed/aHZCqXyqFk4" type="audio/mp4">
+        Trình duyệt của bạn không hỗ trợ thẻ âm thanh.
+    </audio>
+
+    <!-- NÚT ĐIỀU KHIỂN NHẠC NỀN & ĐĨA NHẠC XOAY -->
+    <div class="fixed top-4 right-4 z-[9999999] flex items-center space-x-3 bg-[#1e293b]/90 backdrop-blur-md border border-slate-700 px-3.5 py-2 rounded-full shadow-2xl">
+        <div id="miniVinyl" class="w-7 h-7 rounded-full bg-slate-900 border-2 border-slate-700 flex items-center justify-center relative vinyl-spin vinyl-paused shadow-inner cursor-pointer" onclick="toggleBackgroundMusic()" title="Nhấn để bật/tắt nhạc">
+            <div class="absolute w-2.5 h-2.5 bg-sky-400 rounded-full border border-slate-900 z-10"></div>
+            <div class="absolute inset-0 rounded-full border border-slate-700/50 scale-75"></div>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="flex items-center space-x-1.5">
+                <span class="relative flex h-2 w-2">
+                    <span id="musicPulse" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75 hidden"></span>
+                    <span id="musicDot" class="relative inline-flex rounded-full h-2 w-2 bg-slate-500"></span>
+                </span>
+                <span id="musicLabel" class="text-[11px] font-bold text-slate-300">Nhạc Chill: Tắt</span>
+            </div>
+        </div>
+
+        <button onclick="toggleBackgroundMusic()" id="musicToggleBtn" class="w-7 h-7 bg-sky-600/20 text-sky-400 border border-sky-500/30 rounded-full flex items-center justify-center text-xs hover:bg-sky-600 hover:text-white transition cursor-pointer">
+            <i id="musicIcon" class="fa-solid fa-volume-xmark"></i>
+        </button>
+    </div>
+
+    <!-- MODAL RULES (QUY ĐỊNH & HƯỚNG DẪN) -->
+    <div id="rulesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4">
+        <div class="max-w-lg w-full bg-[#1e293b] border border-slate-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-[#172033]">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-sm text-white">Quy Định & Hướng Dẫn (Rules)</h3>
+                        <p class="text-[11px] text-slate-400">Đọc rules trước khi bắt đầu kiếm tiền tại web</p>
+                    </div>
+                </div>
+                <button onclick="closeRulesModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-5 text-xs">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2 text-sky-400 font-extrabold uppercase tracking-wider text-[11px]">
+                        <i class="fa-solid fa-user-shield"></i>
+                        <span>Tài khoản & Xác thực</span>
+                    </div>
+                    <div class="space-y-2.5">
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-sky-500/10 text-sky-400 font-bold flex items-center justify-center shrink-0 text-[11px]">01</span>
+                            <p class="text-slate-300 leading-relaxed pt-0.5">Mỗi thành viên chỉ được sở hữu duy nhất 1 tài khoản.</p>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-sky-500/10 text-sky-400 font-bold flex items-center justify-center shrink-0 text-[11px]">02</span>
+                            <p class="text-slate-300 leading-relaxed pt-0.5">Không chấp nhận tài khoản có cùng IP hoặc cùng thiết bị.</p>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/10 text-amber-400 font-bold flex items-center justify-center shrink-0 text-[11px]">03</span>
+                            <div class="pt-0.5">
+                                <span class="inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-[10px] mb-1">QUAN TRỌNG</span>
+                                <p class="text-slate-300 leading-relaxed">Trùng IP xảy ra khi nhiều tài khoản cùng mạng Wifi hoặc 4G.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3 p-3 rounded-2xl bg-[#0f172a] border border-slate-800">
+                            <span class="w-6 h-6 rounded-lg bg-red-500/10 text-red-500 font-bold flex items-center justify-center shrink-0 text-[11px]">04</span>
+                            <div class="pt-0.5">
+                                <span class="inline-block px-2 py-0.5 rounded bg-red-500/20 text-red-500 font-bold text-[10px] mb-1">CẤM</span>
+                                <p class="text-slate-300 leading-relaxed">Gian lận tool hoặc clone tài khoản sẽ bị khóa vĩnh viễn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-800 bg-[#172033] flex items-center justify-between">
+                <label class="flex items-center space-x-2 text-[11px] text-slate-400 cursor-pointer select-none">
+                    <input type="checkbox" id="dontShowAgainRules" class="rounded bg-[#0f172a] border-slate-700 text-sky-500 focus:ring-0">
+                    <span>Không hiển thị trong 2 giờ</span>
+                </label>
+                <button onclick="closeRulesModal()" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs transition cursor-pointer shadow-lg shadow-rose-600/30">
+                    Đã hiểu Rules <i class="fa-solid fa-check ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL THÔNG BÁO HỆ THỐNG -->
+    <div id="announcementModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999999] flex items-center justify-center p-4 hidden">
+        <div class="max-w-sm w-full bg-[#1e293b] border border-slate-700 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-[#172033]">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <span class="font-extrabold text-xs text-white uppercase tracking-wider">Thông Báo Hệ Thống</span>
+                </div>
+                <button onclick="closeAnnouncementModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+            </div>
+            <div class="p-6 text-center space-y-4">
+                <div class="inline-block px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 font-black text-xs uppercase tracking-widest">
+                    Cấm Sài Tool
+                </div>
+                <div class="p-4 bg-[#0f172a] border border-slate-800 rounded-2xl">
+                    <p class="text-xs font-bold text-slate-200 uppercase leading-relaxed">
+                        SÀI TOOL THÌ BỊ BAN NHÀ BỊ MẤT TIỀN OAN TỰ CHỊU
+                    </p>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-[#172033]">
+                <button onclick="closeAnnouncementModal()" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Màn hình Cloudflare Verification giả lập -->
+    <div id="cloudflareScreen" class="fixed inset-0 bg-[#0f172a] z-[999999] flex flex-col items-center justify-center text-white px-4">
+        <div class="max-w-md w-full bg-[#1e293b] border border-slate-700 p-8 rounded-3xl shadow-2xl text-center space-y-6">
+            <div class="w-16 h-16 bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-shield-halved fa-bounce"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-black tracking-wide">Kiểm tra bảo mật hệ thống</h2>
+                <p class="text-xs text-slate-400 mt-2">Đang xác thực môi trường duyệt web và chữ ký phần cứng chống bot...</p>
+            </div>
+            <div class="bg-[#0f172a] p-4 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-400">Trạng thái an ninh:</span>
+                <span id="cfStatusText" class="text-sky-400 font-bold">Đang kiểm tra...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Màn hình Đăng Nhập / Đăng Ký -->
+    <div id="authScreen" class="fixed inset-0 bg-[#0f172a] z-50 flex items-center justify-center p-4 overflow-y-auto hidden">
+        <div class="max-w-md w-full bg-[#1e293b] border border-slate-700/80 p-8 rounded-3xl shadow-2xl space-y-6 text-white my-auto">
+            <div class="text-center space-y-2">
+                <div class="avatar-wrap mx-auto w-[110px] h-[110px] mb-2 flex items-center justify-center bg-sky-500/20 rounded-full border-4 border-[#38bdf8] text-3xl font-bold text-sky-400 shadow-[0_0_20px_rgba(56,189,248,0.35)]">
+                    PH
+                </div>
+                <h1>Xác Thực Nhận Coin - ph.huyy</h1>
+                <p class="text-xs text-slate-400">Hệ thống nhận thưởng an toàn</p>
+            </div>
+
+            <div class="grid grid-cols-2 p-1.5 bg-[#0f172a] rounded-2xl border border-slate-800">
+                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="py-2.5 rounded-xl text-xs font-bold transition text-slate-400 hover:text-white cursor-pointer flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Đăng Nhập</span>
+                </button>
+                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="py-2.5 rounded-xl text-xs font-bold transition bg-sky-600 text-white shadow-lg shadow-sky-600/30 cursor-pointer flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Đăng Ký</span>
+                </button>
+            </div>
+
+            <!-- Form Đăng Nhập -->
+            <div id="loginFormContainer" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên tài khoản</label>
+                    <input type="text" id="loginUser" placeholder="Nhập tên tài khoản..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mật khẩu</label>
+                    <input type="password" id="loginPass" placeholder="Nhập mật khẩu..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs font-bold uppercase text-slate-400">Mã xác thực chống bot</label>
+                    <div class="flex items-center space-x-3">
+                        <canvas id="captchaCanvas" width="130" height="46" class="cursor-pointer bg-[#0f172a] border border-slate-700 rounded-xl" title="Nhấn để đổi mã mới"></canvas>
+                        <input type="text" id="loginCaptchaInput" placeholder="Nhập mã..." class="flex-1 bg-[#0f172a] border border-slate-700 rounded-xl py-3 px-4 text-xs text-white uppercase tracking-widest font-bold focus:outline-none focus:border-sky-500">
+                    </div>
+                </div>
+                <button onclick="handleLogin()" class="w-full py-4 rounded-xl bg-sky-600 text-white font-bold text-xs transition cursor-pointer shadow-lg shadow-sky-600/30 hover:bg-sky-500">Đăng Nhập Ngay</button>
+            </div>
+
+            <!-- Form Đăng Ký -->
+            <div id="registerFormContainer" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Tên tài khoản</label>
+                    <input type="text" id="regUser" placeholder="Từ 3–30 ký tự..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Mật khẩu</label>
+                    <input type="password" id="regPass" placeholder="Tối thiểu 6 ký tự..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">Xác nhận mật khẩu</label>
+                    <input type="password" id="regPassConfirm" placeholder="Nhập lại mật khẩu..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                </div>
+                <button onclick="handleRegister()" class="w-full py-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 text-white font-bold text-xs hover:opacity-95 transition cursor-pointer shadow-lg shadow-sky-600/30">
+                    <i class="fa-solid fa-user-plus mr-1"></i> Đăng Ký Tài Khoản
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Giao diện chính sau khi đăng nhập (Tích hợp Dashboard, Link4m Generator & Nhận thưởng) -->
+    <div id="appContainer" class="flex h-full w-full hidden overflow-hidden">
+        <aside class="w-64 bg-[#1e293b] border-r border-slate-800 flex flex-col justify-between hidden sm:flex">
+            <div>
+                <div class="p-6 border-b border-slate-800 flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold overflow-hidden shadow-inner">H</div>
+                    <div>
+                        <h4 id="sidebarUsername" class="font-extrabold text-xs text-white truncate max-w-[120px]">User</h4>
+                        <span class="text-[10px] text-sky-400 font-bold uppercase">ph.huyy Coin Pro</span>
+                    </div>
+                </div>
+                <nav class="p-4 space-y-1.5">
+                    <a href="#" onclick="switchTab('Dashboard'); return false;" data-page="Dashboard" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-sky-400 bg-sky-500/10 transition"><i class="fa-solid fa-chart-pie w-5"></i><span class="text-xs">Tổng Quan</span></a>
+                    <a href="#" onclick="switchTab('Link Generator'); return false;" data-page="Link Generator" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-link w-5"></i><span class="text-xs">Tạo Link Link4m</span></a>
+                    <a href="#" onclick="switchTab('Withdraw'); return false;" data-page="Withdraw" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-wallet w-5"></i><span class="text-xs">Rút Coin</span></a>
+                    <a href="#" onclick="switchTab('History'); return false;" data-page="History" class="nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition"><i class="fa-solid fa-clock-rotate-left w-5"></i><span class="text-xs">Lịch Sử</span></a>
+                </nav>
+            </div>
+            <div class="p-4 border-t border-slate-800 space-y-2">
+                <button onclick="openRulesModal()" class="w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700 transition cursor-pointer"><i class="fa-solid fa-book-open text-sky-400"></i><span>Xem Rules</span></button>
+                <button onclick="handleLogout()" class="w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl bg-red-500/10 text-red-400 font-bold text-xs hover:bg-red-500/20 transition cursor-pointer"><i class="fa-solid fa-right-from-bracket"></i><span>Đăng Xuất</span></button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col h-full overflow-hidden bg-[#0f172a]">
+            <header class="h-16 bg-[#1e293b] border-b border-slate-800 px-6 flex items-center justify-between">
+                <h3 id="pageTitle" class="text-sm font-extrabold text-white">Tổng Quan</h3>
+                <div class="flex items-center space-x-3">
+                    <span id="headerUsername" class="text-xs font-bold text-slate-300">User</span>
+                </div>
+            </header>
+            <div id="main-content" class="flex-1 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Toast thông báo nhỏ -->
+    <div id="toast" class="fixed bottom-5 right-5 z-[999999] transform translate-y-20 opacity-0 transition-all duration-300 bg-[#1e293b] text-white px-5 py-3 rounded-2xl shadow-2xl border border-slate-700 flex items-center space-x-3">
+        <span id="toastIcon"><i class="fa-solid fa-circle-check text-sky-400 text-base"></i></span>
+        <span id="toastMessage" class="text-xs font-bold">Thành công!</span>
+    </div>
+
+    <script>
+        const API_KEY_LINK4M = "6a774c5d8c13a0050630ee0b";
+
+        // Xử lý Modal Rules
+        function openRulesModal() { document.getElementById('rulesModal').classList.remove('hidden'); }
+        function closeRulesModal() {
+            if (document.getElementById('dontShowAgainRules').checked) {
+                localStorage.setItem('hide_rules_until', Date.now() + 2 * 3600 * 1000);
+            }
+            document.getElementById('rulesModal').classList.add('hidden');
+        }
+        function openAnnouncementModal() { document.getElementById('announcementModal').classList.remove('hidden'); }
+        function closeAnnouncementModal() { document.getElementById('announcementModal').classList.add('hidden'); }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const hideUntil = localStorage.getItem('hide_rules_until');
+            if (hideUntil && Date.now() < parseInt(hideUntil)) {
+                document.getElementById('rulesModal').classList.add('hidden');
+            }
+        });
+
+        // Điều khiển nhạc nền Chill
+        let isMusicPlaying = false;
+        function toggleBackgroundMusic() {
+            const music = document.getElementById('bgMusic');
+            const musicIcon = document.getElementById('musicIcon');
+            const musicLabel = document.getElementById('musicLabel');
+            const miniVinyl = document.getElementById('miniVinyl');
+
+            if (isMusicPlaying) {
+                music.pause();
+                isMusicPlaying = false;
+                musicIcon.className = "fa-solid fa-volume-xmark";
+                musicLabel.textContent = "Nhạc Chill: Tắt";
+                if (miniVinyl) miniVinyl.classList.add('vinyl-paused');
+            } else {
+                music.play().then(() => {
+                    isMusicPlaying = true;
+                    musicIcon.className = "fa-solid fa-volume-high";
+                    musicLabel.textContent = "Nhạc Chill: Đang phát";
+                    if (miniVinyl) miniVinyl.classList.remove('vinyl-paused');
+                }).catch(() => showToast('Trình duyệt chặn phát nhạc tự động!', 'error'));
+            }
+        }
+
+        // Đồng hồ hệ thống
+        function startRealtimeClock() {
+            const clockEl = document.getElementById('realtimeClock');
+            const dateEl = document.getElementById('realtimeDate');
+            if (!clockEl) return;
+            setInterval(() => {
+                const now = new Date();
+                clockEl.textContent = now.toTimeString().split(' ')[0];
+                if (dateEl) dateEl.textContent = now.toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }, 1000);
+        }
+
+        // Captcha
+        let currentCaptchaCode = "";
+        function generateCaptcha() {
+            const canvas = document.getElementById('captchaCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            currentCaptchaCode = Array.from({length: 5}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+            ctx.font = "bold 22px sans-serif";
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText(currentCaptchaCode, 20, 30);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('captchaCanvas');
+            if (canvas) canvas.addEventListener('click', generateCaptcha);
+        });
+
+        let currentUserIp = "127.0.0.1";
+        async function fetchUserIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                currentUserIp = data.ip;
+            } catch(e) { currentUserIp = "local_ip"; }
+        }
+
+        const DB_KEY = "phhuyy_coin_database_v1";
+        function getDatabase() {
+            return JSON.parse(localStorage.getItem(DB_KEY)) || { users: {}, ipRegistry: {} };
+        }
+        function saveDatabase(db) { localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+        function getUserData(username) { return getDatabase().users[username] || null; }
+
+        let currentSessionUser = sessionStorage.getItem('phhuyy_session') || null;
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            await fetchUserIP();
+            generateCaptcha();
+
+            // Kiểm tra nếu URL có tham số ?action=claim (Vượt Link4m thành công chuyển hướng về)
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+
+            setTimeout(() => {
+                document.getElementById('cloudflareScreen').classList.add('hidden');
+                if (action === 'claim') {
+                    // Tự động cộng thưởng +500 Coin nếu có session hoặc user chung
+                    processLink4mClaim();
+                } else if (currentSessionUser && getUserData(currentSessionUser)) {
+                    initApp(currentSessionUser);
+                } else {
+                    document.getElementById('authScreen').classList.remove('hidden');
+                }
+            }, 1000);
+        });
+
+        function processLink4mClaim() {
+            let db = getDatabase();
+            // Nếu chưa đăng nhập, tự động tạo/gán vào tài khoản khách hoặc yêu cầu đăng nhập
+            if (!currentSessionUser || !db.users[currentSessionUser]) {
+                // Lấy user đầu tiên trong DB hoặc tạo guest
+                let allUsers = Object.keys(db.users);
+                if (allUsers.length > 0) {
+                    currentSessionUser = allUsers[0];
+                } else {
+                    db.users["guest"] = { password: "123", balance: 0, history: [] };
+                    currentSessionUser = "guest";
+                }
+            }
+
+            db.users[currentSessionUser].balance += 500;
+            db.users[currentSessionUser].history.push({
+                action: 'Hoàn thành vượt Link4m',
+                amount: 500,
+                time: new Date().toLocaleString()
+            });
+            saveDatabase(db);
+            sessionStorage.setItem('phhuyy_session', currentSessionUser);
+            alert("Vượt Link4m thành công! Đã cộng +500 Coin vào tài khoản: " + currentSessionUser);
+            window.location.href = window.location.pathname; // Xóa param khỏi URL
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('loginFormContainer');
+            const regForm = document.getElementById('registerFormContainer');
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+            } else {
+                regForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleRegister() {
+            const user = document.getElementById('regUser').value.trim();
+            const pass = document.getElementById('regPass').value.trim();
+            const confirmPass = document.getElementById('regPassConfirm').value.trim();
+
+            if (!user || !pass) return showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+            if (pass !== confirmPass) return showToast('Mật khẩu không khớp!', 'error');
+
+            const db = getDatabase();
+            if (db.users[user]) return showToast('Tài khoản đã tồn tại!', 'error');
+
+            db.users[user] = { password: pass, balance: 0, history: [{ action: 'Khởi tạo tài khoản', amount: 0, time: new Date().toLocaleString() }] };
+            saveDatabase(db);
+            showToast('Đăng ký thành công!');
+            switchAuthTab('login');
+            document.getElementById('loginUser').value = user;
+        }
+
+        function handleLogin() {
+            if (document.getElementById('loginCaptchaInput').value.trim().toUpperCase() !== currentCaptchaCode) {
+                showToast('Sai mã xác thực!', 'error');
+                generateCaptcha();
+                return;
+            }
+            const user = document.getElementById('loginUser').value.trim();
+            const pass = document.getElementById('loginPass').value.trim();
+            const db = getDatabase();
+            if (db.users[user] && db.users[user].password === pass) {
+                currentSessionUser = user;
+                sessionStorage.setItem('phhuyy_session', user);
+                document.getElementById('authScreen').classList.add('hidden');
+                initApp(user);
+            } else {
+                showToast('Sai tài khoản hoặc mật khẩu!', 'error');
+                generateCaptcha();
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('phhuyy_session');
+            location.reload();
+        }
+
+        function initApp(username) {
+            document.getElementById('appContainer').classList.remove('hidden');
+            document.getElementById('sidebarUsername').textContent = username;
+            document.getElementById('headerUsername').textContent = username;
+            switchTab('Dashboard');
+        }
+
+        function switchTab(pageName) {
+            document.querySelectorAll('.nav-link').forEach(el => {
+                if (el.getAttribute('data-page') === pageName) {
+                    el.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-semibold text-sky-400 bg-sky-500/10 transition";
+                } else {
+                    el.className = "nav-link flex items-center space-x-3 rounded-xl px-4 py-3 font-medium text-slate-400 hover:bg-slate-800/50 transition";
+                }
+            });
+            document.getElementById('pageTitle').textContent = pageName;
+            renderPageContent(pageName);
+        }
+
+        function renderPageContent(pageName) {
+            const container = document.getElementById('main-content');
+            const data = getUserData(currentSessionUser);
+            if (!data) return;
+
+            if (pageName === 'Dashboard') {
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="dashboard-glow rounded-3xl p-6 lg:p-8 text-white shadow-xl flex flex-col justify-between lg:col-span-2">
+                                <div>
+                                    <p class="text-xs font-medium text-sky-100">Số Dư Coin Hiện Tại (${currentSessionUser})</p>
+                                    <div class="mt-1 text-3xl lg:text-4xl font-black">${data.balance.toLocaleString('vi-VN')} Coin</div>
+                                    <p class="text-xs text-sky-200 mt-2"><i class="fa-solid fa-network-wired"></i> IP: ${currentUserIp}</p>
+                                </div>
+                                <div class="mt-6 flex gap-3">
+                                    <button onclick="switchTab('Link Generator')" class="bg-white px-5 py-3 text-xs font-bold text-sky-900 rounded-xl shadow hover:bg-sky-50 transition cursor-pointer">Tạo Link Rút Gọn</button>
+                                </div>
+                            </div>
+                            <div class="bg-[#1e293b] border border-slate-700 rounded-3xl p-6 flex flex-col justify-between shadow-xl">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Thời Gian Hệ Thống</span>
+                                <div class="text-center my-auto py-2">
+                                    <div id="realtimeClock" class="text-3xl font-black text-white font-mono">00:00:00</div>
+                                    <div id="realtimeDate" class="text-xs text-slate-400 mt-1">Đang tải...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                startRealtimeClock();
+            } else if (pageName === 'Link Generator') {
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-6 max-w-xl">
+                        <h2 class="text-xl font-extrabold text-white">Tạo Link Rút Gọn Link4m</h2>
+                        <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-1.5">URL Đích Cần Rút Gọn</label>
+                                <input type="text" id="targetUrlInput" placeholder="https://example.com" class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white focus:outline-none focus:border-sky-500">
+                            </div>
+                            <button onclick="generateLink4m()" id="genBtn" class="w-full py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition cursor-pointer">Tạo Link Ngay</button>
+                            
+                            <div id="resultBox" class="hidden space-y-2 pt-2">
+                                <label class="block text-xs font-bold text-emerald-400">Link Rút Gọn Thành Công:</label>
+                                <input type="text" id="shortResultOutput" readonly class="w-full bg-[#0f172a] border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-300">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (pageName === 'Withdraw') {
+                container.innerHTML = `
+                    <div class="p-6 lg:p-8 space-y-6 max-w-xl">
+                        <h2 class="text-xl font-extrabold text-white">Rút Coin Về Ví</h2>
+                        <div class="bg-[#1e293b] p-6 rounded-2xl border border-slate-700 space-y-4">
+                            <input type="number" id="withdrawAmount" placeholder="Số lượng muốn rút..." class="w-full bg-[#0f172a] border border-slate-700 rounded-xl py-3.5 px-4 text-xs text-white">
+                            <button onclick="handleWithdraw()" class="w-full py-3.5 bg-sky-600 text-white font-bold rounded-xl text-xs">Xác Nhận Rút</button>
+                        </div>
+                    </div>
+                `;
+            } else if (pageName === 'History') {
+                let historyHtml = data.history.slice().reverse().map(item => `
+                    <div class="flex items-center justify-between p-4 bg-[#1e293b] border border-slate-700 rounded-xl text-xs">
+                        <div><p class="font-bold text-white">${item.action}</p><p class="text-[10px] text-slate-400">${item.time}</p></div>
+                        <span class="font-black ${item.amount >= 0 ? 'text-sky-400' : 'text-red-400'}">${item.amount >= 0 ? '+' : ''}${item.amount} Coin</span>
+                    </div>
+                `).join('');
+                container.innerHTML = `<div class="p-6 lg:p-8 space-y-4 max-w-2xl"><h2 class="text-xl font-extrabold text-white">Lịch Sử</h2><div class="space-y-3">${historyHtml}</div></div>`;
+            }
+        }
+
+        async function generateLink4m() {
+            let target = document.getElementById('targetUrlInput').value.trim();
+            if (!target) return showToast('Vui lòng nhập URL!', 'error');
+
+            // Tự động đính kèm ?action=claim để khi người dùng vượt link4m xong bấm vào sẽ tự cộng coin về trang này
+            let currentDomainRedirect = window.location.origin + window.location.pathname + "?action=claim";
+            let fullApiUrl = `https://link4m.co/api-shorten/v2?api=${API_KEY_LINK4M}&url=${encodeURIComponent(currentDomainRedirect)}`;
+
+            try {
+                let res = await fetch(fullApiUrl);
+                let data = await res.json();
+                let shortUrl = data.shortenedUrl || data.url || data.result;
+                if (shortUrl) {
+                    document.getElementById('resultBox').classList.remove('hidden');
+                    document.getElementById('shortResultOutput').value = shortUrl;
+                    showToast('Tạo link rút gọn thành công!');
+                } else {
+                    showToast('Không tạo được link từ API!', 'error');
+                }
+            } catch(e) {
+                showToast('Lỗi kết nối API Link4m!', 'error');
+            }
+        }
+
+        function handleWithdraw() {
+            let amount = parseInt(document.getElementById('withdrawAmount').value);
+            let db = getDatabase();
+            let u = db.users[currentSessionUser];
+            if (!amount || amount <= h => amount <= 0 || u.balance < amount) return showToast('Số dư không đủ hoặc không hợp lệ!', 'error');
+            u.balance -= amount;
+            u.history.push({ action: 'Rút Coin', amount: -amount, time: new Date().toLocaleString() });
+            saveDatabase(db);
+            showToast('Rút coin thành công!');
+            switchTab('Dashboard');
+        }
+    </script>
+</body>
+</html>
